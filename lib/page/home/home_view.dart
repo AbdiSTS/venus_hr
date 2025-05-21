@@ -4,6 +4,8 @@ import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:venus_hr_psti/core/extensions/date_time_ext.dart';
+import 'package:venus_hr_psti/page/home/leave/leave_view.dart';
+import 'package:venus_hr_psti/page/home/permission/permision_view.dart';
 
 import '../../core/assets/assets.gen.dart';
 import '../../core/components/button_bouncing.dart';
@@ -245,6 +247,10 @@ class _HomeViewState extends State<HomeView> {
                       ),
                     ),
                     GestureDetector(
+                      onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => PermisionView())),
                       child: Card(
                         elevation: 5,
                         color: Colors.white,
@@ -269,6 +275,8 @@ class _HomeViewState extends State<HomeView> {
                       ),
                     ),
                     GestureDetector(
+                      onTap: () => Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => LeaveView())),
                       child: Card(
                         elevation: 5,
                         color: Colors.white,

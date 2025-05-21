@@ -76,7 +76,127 @@ class _ProfileViewState extends State<ProfileView> {
                   ),
                 ),
               )),
-          Expanded(flex: 3, child: Container()),
+          Expanded(
+            flex: 3,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(
+                        color: const Color.fromARGB(
+                            75, 0, 0, 0), // Warna garis border
+                        width: 0.5, // Ketebalan garis border
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Image.asset(
+                            "assets/images/address.png",
+                            width: 25,
+                          ),
+                          SizedBox(
+                            width: 180,
+                            child: AutoSizeText(
+                              "-",
+                              maxLines: 3,
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.lato(
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                          Container(),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(
+                        color: const Color.fromARGB(
+                            75, 0, 0, 0), // Warna garis border
+                        width: 0.5, // Ketebalan garis border
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Image.asset(
+                            "assets/images/smartphone.png",
+                            width: 25,
+                          ),
+                          SizedBox(
+                            width: 180,
+                            child: AutoSizeText(
+                              "-",
+                              maxLines: 3,
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.lato(
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                          Container(),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(
+                        color: const Color.fromARGB(
+                            75, 0, 0, 0), // Warna garis border
+                        width: 0.5, // Ketebalan garis border
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Image.asset(
+                            "assets/images/cardname.png",
+                            width: 25,
+                          ),
+                          SizedBox(
+                            width: 180,
+                            child: AutoSizeText(
+                              "-",
+                              maxLines: 3,
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.lato(
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                          Container(),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );
