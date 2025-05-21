@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # venus_hr_psti
 
 A new Flutter project.
@@ -14,3 +15,6 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+=======
+# venus_hr
+>>>>>>> 8bb6c1b3fc652c62e11451c6b140d03c637858bb
