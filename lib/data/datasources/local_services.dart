@@ -13,6 +13,7 @@ class LocalServices extends ChangeNotifier {
   Future<ResponseResult?> getAuthData() async {
     final pref = await SharedPreferences.getInstance();
     final data = pref.getString('auth_data');
+    print("data pref : ${data}");
     if (data != null) {
       return ResponseResult.fromJson(jsonDecode(data));
     } else {

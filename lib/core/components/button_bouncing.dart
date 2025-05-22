@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class BouncingButton extends StatefulWidget {
   final VoidCallback onTap;
@@ -16,11 +17,6 @@ class _BouncingButtonState extends State<BouncingButton>
   late AnimationController _controller;
   final Duration _animationDuration = const Duration(milliseconds: 300);
   final Tween<double> _tween = Tween<double>(begin: 1.0, end: 0.95);
-  final kLightBlue = Color(0xffEBF6FF);
-  final kDarkBlue = Color(0xff369FFF);
-  final kGreen = Color(0xff8AC53E);
-  final kOrange = Color(0xffFF993A);
-  final kYellow = Color(0xffFFD143);
 
   @override
   void initState() {
@@ -56,70 +52,26 @@ class _BouncingButtonState extends State<BouncingButton>
             reverseCurve: Curves.easeIn,
           ),
         ),
-        child: Container(
-          width: 170,
-          height: 150,
-          decoration: BoxDecoration(
-              color: kLightBlue,
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black
-                      .withOpacity(0.1), // Warna bayangan dan opasitas
-                  spreadRadius: 1, // Jarak penyebaran bayangan
-                  blurRadius: 9, // Radius blur bayangan
-                  offset: Offset(0, 1), // Offset (x, y) dari bayangan
-                ),
-              ]),
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Image.asset(
-                    "${widget.urlImage}",
-                    width: 60,
-                    height: 50,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        height: 40,
-                        width: 7,
-                        decoration: BoxDecoration(
-                            color: kDarkBlue,
-                            borderRadius: BorderRadius.circular(15)),
-                      ),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width / 3.5,
-                        child: Text(
-                          "${widget.judul}",
-                          maxLines: 2,
-                          style: TextStyle(
-                            fontSize: widget.judul == "Absen" &&
-                                    widget.judul == "Leave" &&
-                                    widget.judul == "Loan" &&
-                                    widget.judul == "Claim"
-                                ? 30
-                                : widget.judul == "Overtime" &&
-                                        widget.judul == "Permission"
-                                    ? 15
-                                    : widget.judul == "Attendance Log"
-                                        ? 15
-                                        : 20,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xff006ED3),
-                          ),
-                        ),
-                      )
-                    ],
-                  )
-                ],
+        child: Card(
+          elevation: 5,
+          color: Colors.white,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                widget.urlImage!,
+                width: 70,
               ),
-            ),
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                widget.judul!,
+                style: GoogleFonts.lato(
+                  fontWeight: FontWeight.bold,
+                ),
+              )
+            ],
           ),
         ),
       ),

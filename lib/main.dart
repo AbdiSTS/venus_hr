@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:venus_hr_psti/page/home/home_viewmodel.dart';
 import 'package:venus_hr_psti/page/login/login_view.dart';
 import 'package:venus_hr_psti/page/splash_screen/splash_screen.dart';
 
@@ -12,6 +13,7 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => GlobalLoadingState()),
+        ChangeNotifierProvider(create: (_) => HomeViewmodel()),
       ],
       child: MyApp(),
     ),

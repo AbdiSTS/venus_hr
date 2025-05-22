@@ -8,15 +8,11 @@ class GlobalLoadingState with ChangeNotifier {
 
   void show() {
     _isLoading = true;
-    print("_isLoading : ${_isLoading}");
     notifyListeners();
   }
 
   void hide() {
     _isLoading = false;
-    print("_isLoading : ${_isLoading}");
     notifyListeners();
   }
-
-  
 }

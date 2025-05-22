@@ -17,7 +17,7 @@ class SplashViewmodel extends FutureViewModel {
     try {
       setBusy(true);
       final getPref = await LocalServices().getAuthData();
-      print("get Pref : ${getPref}");
+
       if (getPref == null) {
         Future.delayed(Duration(seconds: 3), () async {
           Navigator.of(ctx!)
@@ -25,34 +25,43 @@ class SplashViewmodel extends FutureViewModel {
         });
         setBusy(false);
       } else {
-        final data = await apiServices.cekToken();
+        final cekConnection = await ApiServices().hasInternetAccess();
 
+        if (!cekConnection) {
+          ScaffoldMessenger.of(ctx!).showSnackBar(
+            SnackBar(
+              content: Text("No Internet Connection"),
+              backgroundColor: AppColors.red,
+            ),
+          );
+        }
+        final data = await apiServices.cekToken();
         if (data) {
+          setBusy(false);
           Future.delayed(Duration(seconds: 3), () async {
             Navigator.of(ctx!).push(
                 MaterialPageRoute(builder: (context) => BottomNavigatorView()));
           });
-          setBusy(false);
+
           notifyListeners();
         } else {
           Future.delayed(
             Duration(seconds: 3),
             () async {
+              final pref = await SharedPreferences.getInstance();
+              pref.clear();
+              setBusy(false);
               Navigator.of(ctx!)
                   .push(MaterialPageRoute(builder: (context) => LoginView()));
-              ScaffoldMessenger.of(ctx!).showSnackBar(
-                SnackBar(
-                  content: Text("Your Session is Expired , Please Login Again"),
-                  backgroundColor: AppColors.red,
-                ),
-              );
             },
           );
-          setBusy(false);
+
           notifyListeners();
         }
       }
-    } catch (e) {}
+    } catch (e) {
+      print("Error : ${e}");
+    }
   }
 
   @override

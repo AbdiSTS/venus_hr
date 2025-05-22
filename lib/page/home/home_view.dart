@@ -32,7 +32,11 @@ class _HomeViewState extends State<HomeView> {
     return ViewModelBuilder.reactive(
         viewModelBuilder: () => HomeViewmodel(ctx: context),
         builder: (context, vm, child) {
-          
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            vm.isBusy
+                ? context.read<GlobalLoadingState>().show()
+                : context.read<GlobalLoadingState>().hide();
+          });
           return Scaffold(
             backgroundColor: Colors.white,
             body: Column(
@@ -65,12 +69,21 @@ class _HomeViewState extends State<HomeView> {
                                     children: [
                                       Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.end,
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
+                                          CircleAvatar(
+                                            backgroundColor: Colors.white,
+                                            child: Image.asset(
+                                                "assets/images/venusHR.png"),
+                                          ),
                                           Container(
                                             height: 25,
                                             width: 105,
                                             child: ElevatedButton(
+                                              style: ButtonStyle(
+                                                  elevation:
+                                                      WidgetStatePropertyAll(
+                                                          2)),
                                               onPressed: () {
                                                 setState(() {
                                                   vm.logout();
@@ -108,25 +121,17 @@ class _HomeViewState extends State<HomeView> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          SizedBox(
-                                            width: 150,
-                                            child: AutoSizeText(
-                                              "Muhammad Abdillah Dzikri",
-                                              maxLines: 2,
-                                              minFontSize: 10,
-                                              stepGranularity: 10,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: GoogleFonts.lato(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold,
-                                              ),
+                                          AutoSizeText(
+                                            "${vm.dataUser?.userData?[0].userId ?? '-'}",
+                                            maxLines: 2,
+                                            minFontSize: 10,
+                                            stepGranularity: 10,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: GoogleFonts.lato(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
                                             ),
                                           ),
-                                          CircleAvatar(
-                                            backgroundColor: Colors.white,
-                                            child: Image.asset(
-                                                "assets/images/venusHR.png"),
-                                          )
                                         ],
                                       ),
                                       SizedBox(
@@ -139,23 +144,46 @@ class _HomeViewState extends State<HomeView> {
                                         height: 5,
                                       ),
                                       Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Icon(
-                                            Icons.location_on,
-                                            color: Colors.white,
-                                            size: 13,
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.location_on,
+                                                color: Colors.white,
+                                                size: 13,
+                                              ),
+                                              SizedBox(
+                                                width: 5,
+                                              ),
+                                              Text(
+                                                "${vm.namaJalan ?? '-'}",
+                                                style: GoogleFonts.lato(
+                                                  color: Colors.white,
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                width: 5,
+                                              ),
+                                            ],
                                           ),
-                                          SizedBox(
-                                            width: 5,
-                                          ),
-                                          Text(
-                                            "Jl. Benyamin Suaeb No.13, RT.13/RW.6, Kebon Kosong",
-                                            style: GoogleFonts.lato(
-                                              color: Colors.white,
-                                              fontSize: 10,
-                                              fontWeight: FontWeight.bold,
+                                          InkWell(
+                                            onTap: () {
+                                              vm.getAddressLocation();
+                                            },
+                                            child: CircleAvatar(
+                                              backgroundColor: Colors.white,
+                                              radius: 12,
+                                              child: Icon(
+                                                color: Colors.black,
+                                                Icons.refresh,
+                                                size: 12,
+                                              ),
                                             ),
-                                          )
+                                          ),
                                         ],
                                       ),
                                       SizedBox(
@@ -165,71 +193,102 @@ class _HomeViewState extends State<HomeView> {
                                         DateTime.now().toFormattedTime(),
                                         style: const TextStyle(
                                           fontWeight: FontWeight.bold,
-                                          fontSize: 20,
+                                          fontSize: 22,
                                           color: Colors.white,
                                         ),
                                       ),
                                       Text(
-                                        "${DateTime.now().toFormattedDate()}",
+                                        "${DateTime.now().toFormattedDateDays()}",
                                         style: const TextStyle(
                                           fontSize: 12,
                                           color: Colors.white,
                                         ),
                                       ),
                                       SizedBox(
-                                        height: 15,
+                                        height: 5,
                                       ),
                                       Divider(
                                         color: Colors.white,
                                       ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Column(
-                                            children: [
-                                              Text(
-                                                "10",
-                                                style: GoogleFonts.lato(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              Text(
-                                                "Cuti Tahunan(2024)",
-                                                style: GoogleFonts.lato(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          DottedVerticalLine(
-                                            height: 50,
-                                            dashHeight: 5,
-                                            dashSpacing: 4,
-                                            color: Colors.white,
-                                          ),
-                                          Column(
-                                            children: [
-                                              Text(
-                                                "10",
-                                                style: GoogleFonts.lato(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              Text(
-                                                "Cuti Tahunan (2025)",
-                                                style: GoogleFonts.lato(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
+                                      Center(
+                                        child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
+                                            children: vm
+                                                    .listSaldoLeave?.listData!
+                                                    .map((e) {
+                                                  return Column(
+                                                    children: [
+                                                      Text(
+                                                        "${e['Saldo']}",
+                                                        style: GoogleFonts.lato(
+                                                          color: Colors.white,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        "${e['LeaveTypeName']} ${e['LeaveYear'] ?? ''}",
+                                                        style: GoogleFonts.lato(
+                                                          color: Colors.white,
+                                                          fontSize: 12,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  );
+                                                }).toList() ??
+                                                []),
                                       ),
+                                      // Row(
+                                      //   mainAxisAlignment:
+                                      //       MainAxisAlignment.spaceBetween,
+                                      //   children: [
+                                      //     Column(
+                                      //       children: [
+                                      //         Text(
+                                      //           "${vm.listSaldoLeave?.listData?[0]['Saldo']}",
+                                      //           style: GoogleFonts.lato(
+                                      //             color: Colors.white,
+                                      //             fontWeight: FontWeight.bold,
+                                      //           ),
+                                      //         ),
+                                      //         Text(
+                                      //           "Cuti Tahunan(2024)",
+                                      //           style: GoogleFonts.lato(
+                                      //             color: Colors.white,
+                                      //             fontWeight: FontWeight.bold,
+                                      //           ),
+                                      //         ),
+                                      //       ],
+                                      //     ),
+                                      //     DottedVerticalLine(
+                                      //       height: 50,
+                                      //       dashHeight: 5,
+                                      //       dashSpacing: 4,
+                                      //       color: Colors.white,
+                                      //     ),
+                                      //     Column(
+                                      //       children: [
+                                      //         Text(
+                                      //           "10",
+                                      //           style: GoogleFonts.lato(
+                                      //             color: Colors.white,
+                                      //             fontWeight: FontWeight.bold,
+                                      //           ),
+                                      //         ),
+                                      //         Text(
+                                      //           "Cuti Tahunan (2025)",
+                                      //           style: GoogleFonts.lato(
+                                      //             color: Colors.white,
+                                      //             fontWeight: FontWeight.bold,
+                                      //           ),
+                                      //         ),
+                                      //       ],
+                                      //     ),
+                                      //   ],
+                                      // ),
                                     ],
                                   ),
                                 ),
@@ -252,30 +311,10 @@ class _HomeViewState extends State<HomeView> {
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         children: [
-                          GestureDetector(
-                            child: Card(
-                              elevation: 5,
-                              color: Colors.white,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Image.asset(
-                                    "assets/images/check_in.png",
-                                    width: 70,
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  Text(
-                                    "Check In",
-                                    style: GoogleFonts.lato(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
+                          BouncingButton(
+                              urlImage: "assets/images/check_in.png",
+                              judul: "Check In",
+                              onTap: () => {}),
                           GestureDetector(
                             child: Card(
                               elevation: 5,

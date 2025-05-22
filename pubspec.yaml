@@ -49,6 +49,10 @@ dependencies:
   image_picker: ^1.0.4
   encrypt: ^5.0.3
   provider: ^6.1.5
+  connectivity_plus: ^6.1.4
+  geolocator: ^11.0.0
+  google_maps_flutter: ^2.7.0
+  geocoding: ^3.0.0
   
  
 
