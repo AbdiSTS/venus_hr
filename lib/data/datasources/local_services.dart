@@ -2,19 +2,20 @@ import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
+import 'package:venus_hr_psti/data/models/response_result.dart';
+
 class LocalServices extends ChangeNotifier {
-  Future<void> saveDataLogin(List<dynamic> data) async {
+  Future<void> saveDataLogin(ResponseResult data) async {
     final pref = await SharedPreferences.getInstance();
-    await pref.setString('auth_data', jsonEncode(data));
+    await pref.setString('auth_data', data.toJson());
   }
 
-  Future<dynamic> getAuthData() async {
+  Future<ResponseResult?> getAuthData() async {
     final pref = await SharedPreferences.getInstance();
     final data = pref.getString('auth_data');
     if (data != null) {
-      return jsonDecode(data);
+      return ResponseResult.fromJson(jsonDecode(data));
     } else {
-      print("save data gagal getAuthData()");
       return null;
     }
   }

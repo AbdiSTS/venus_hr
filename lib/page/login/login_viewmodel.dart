@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stacked/stacked.dart';
 import 'package:venus_hr_psti/data/datasources/api_services.dart';
 import 'package:venus_hr_psti/data/datasources/local_services.dart';
+import 'package:venus_hr_psti/data/models/response_result.dart';
 import 'package:venus_hr_psti/page/bottom_navigator_view.dart';
 
 import '../../core/constants/colors.dart';
@@ -20,12 +24,14 @@ class LoginViewmodel extends FutureViewModel {
     setBusy(true);
     final responseData = await apiServices.login(
         usernameController!.text, passwordController!.text);
-    if (responseData.data.isNotEmpty) {
-      await localServices.saveDataLogin(responseData.data);
-      // Navigator.of(ctx!).pushReplacement(MaterialPageRoute(
-      //   builder: (context) => BottomNavigatorView(),
-      // ));
-      print("responseData : ${responseData.data}");
+    // print("responseData : ${}");
+    final datas = ResponseResult.fromJson(responseData.toMap());
+    print("data : ${datas.data}");
+    if (responseData.data!.isNotEmpty) {
+      await localServices.saveDataLogin(datas);
+      Navigator.of(ctx!).pushReplacement(MaterialPageRoute(
+        builder: (context) => BottomNavigatorView(),
+      ));
       setBusy(false);
       notifyListeners();
     } else {
@@ -38,17 +44,6 @@ class LoginViewmodel extends FutureViewModel {
       setBusy(false);
       notifyListeners();
     }
-  }
-
-  cekToken() async {
-    setBusy(true);
-    final data = await apiServices.cekToken();
-    if (data) {
-      setBusy(false);
-    } else {
-      setBusy(false);
-    }
-    print("data cek token : ${data}");
   }
 
   @override

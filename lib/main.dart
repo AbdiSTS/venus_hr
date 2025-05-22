@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:venus_hr_psti/page/login/login_view.dart';
+import 'package:venus_hr_psti/page/splash_screen/splash_screen.dart';
 
 import 'core/theme/app_theme.dart';
 import 'page/bottom_navigator_view.dart';
@@ -38,7 +39,8 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
       // home: BottomNavigatorView(),
-      home: LoginView(),
+      // home: LoginView(),
+      home: SplashScreen(),
     );
   }
 }
