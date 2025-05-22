@@ -24,9 +24,7 @@ class LoginViewmodel extends FutureViewModel {
     setBusy(true);
     final responseData = await apiServices.login(
         usernameController!.text, passwordController!.text);
-    // print("responseData : ${}");
     final datas = ResponseResult.fromJson(responseData.toMap());
-    print("data : ${datas.data}");
     if (responseData.data!.isNotEmpty) {
       await localServices.saveDataLogin(datas);
       Navigator.of(ctx!).pushReplacement(MaterialPageRoute(

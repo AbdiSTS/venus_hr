@@ -16,43 +16,43 @@ class SplashViewmodel extends FutureViewModel {
   cekToken() async {
     try {
       setBusy(true);
-    print("cek");
-    final getPref = await LocalServices().getAuthData();
-    print("getPref : ${getPref}");
-    if (getPref == null) {
-      Future.delayed(Duration(seconds: 3), () async {
-        Navigator.of(ctx!)
-            .push(MaterialPageRoute(builder: (context) => LoginView()));
-      });
-      setBusy(false);
-    } else {
-      final data = await apiServices.cekToken();
-      print("data : $data");
-      if (data) {
-        Future.delayed(Duration(seconds: 3), () async {
-          Navigator.of(ctx!).push(
-              MaterialPageRoute(builder: (context) => BottomNavigatorView()));
-        });
-        setBusy(false);
-        notifyListeners();
-      } else {
+      final getPref = await LocalServices().getAuthData();
+      print("get Pref : ${getPref}");
+      if (getPref == null) {
         Future.delayed(Duration(seconds: 3), () async {
           Navigator.of(ctx!)
               .push(MaterialPageRoute(builder: (context) => LoginView()));
-          ScaffoldMessenger.of(ctx!).showSnackBar(
-            SnackBar(
-              content: Text("Your Session is Expired , Please Login Again"),
-              backgroundColor: AppColors.red,
-            ),
-          );
         });
         setBusy(false);
-        notifyListeners();
+      } else {
+        final data = await apiServices.cekToken();
+
+        if (data) {
+          Future.delayed(Duration(seconds: 3), () async {
+            Navigator.of(ctx!).push(
+                MaterialPageRoute(builder: (context) => BottomNavigatorView()));
+          });
+          setBusy(false);
+          notifyListeners();
+        } else {
+          Future.delayed(
+            Duration(seconds: 3),
+            () async {
+              Navigator.of(ctx!)
+                  .push(MaterialPageRoute(builder: (context) => LoginView()));
+              ScaffoldMessenger.of(ctx!).showSnackBar(
+                SnackBar(
+                  content: Text("Your Session is Expired , Please Login Again"),
+                  backgroundColor: AppColors.red,
+                ),
+              );
+            },
+          );
+          setBusy(false);
+          notifyListeners();
+        }
       }
-    }
-    } catch (e) {
-      print("error : ${e}");
-    }
+    } catch (e) {}
   }
 
   @override

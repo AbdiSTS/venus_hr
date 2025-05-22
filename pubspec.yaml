@@ -48,6 +48,7 @@ dependencies:
   flutter_timeline_calendar: ^1.0.9
   image_picker: ^1.0.4
   encrypt: ^5.0.3
+  provider: ^6.1.5
   
  
 

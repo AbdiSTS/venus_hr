@@ -49,7 +49,7 @@ class ApiServices extends ChangeNotifier {
       final response = await http.post(url,
           headers: getHeaders(),
           body: jsonEncode({'data': encryptData(jsonEncode(dataJson))}));
-
+      print("data body : ${jsonDecode(response.body)}");
       if (response.statusCode == 201) {
         return ResponseResult.fromJson(jsonDecode(response.body));
       } else {
@@ -80,5 +80,7 @@ class ApiServices extends ChangeNotifier {
       return false;
     }
   }
+
+
 
 }
