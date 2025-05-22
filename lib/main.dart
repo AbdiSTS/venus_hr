@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:venus_hr_psti/page/login/login_view.dart';
 
 import 'core/theme/app_theme.dart';
 import 'page/bottom_navigator_view.dart';
@@ -36,7 +37,8 @@ class _MyAppState extends State<MyApp> {
           primary: Colors.black, // ⬅️ warna utama (misal tombol)
         ),
       ),
-      home: BottomNavigatorView(),
+      // home: BottomNavigatorView(),
+      home: LoginView(),
     );
   }
 }

@@ -4,7 +4,9 @@ import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:venus_hr_psti/core/extensions/date_time_ext.dart';
+import 'package:venus_hr_psti/page/home/attendance_log/attendance_log_view.dart';
 import 'package:venus_hr_psti/page/home/leave/leave_view.dart';
+import 'package:venus_hr_psti/page/home/overtime/overtime_view.dart';
 import 'package:venus_hr_psti/page/home/permission/permision_view.dart';
 
 import '../../core/assets/assets.gen.dart';
@@ -275,6 +277,34 @@ class _HomeViewState extends State<HomeView> {
                       ),
                     ),
                     GestureDetector(
+                      onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => AttendanceLogView())),
+                      child: Card(
+                        elevation: 5,
+                        color: Colors.white,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              "assets/images/attendance.png",
+                              width: 70,
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              "Attendance Log",
+                              style: GoogleFonts.lato(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
                       onTap: () => Navigator.push(context,
                           MaterialPageRoute(builder: (context) => LeaveView())),
                       child: Card(
@@ -292,6 +322,32 @@ class _HomeViewState extends State<HomeView> {
                             ),
                             Text(
                               "Leave",
+                              style: GoogleFonts.lato(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => OvertimeView())),
+                      child: Card(
+                        elevation: 5,
+                        color: Colors.white,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              "assets/images/overtime.png",
+                              width: 70,
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              "Overtime",
                               style: GoogleFonts.lato(
                                 fontWeight: FontWeight.bold,
                               ),
