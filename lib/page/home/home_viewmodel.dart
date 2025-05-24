@@ -168,22 +168,22 @@ class HomeViewmodel extends FutureViewModel {
         return false;
       }
 
-      bool isNotTrust = await JailbreakRootDetection.instance.isNotTrust;
-      bool isRealDevice = await JailbreakRootDetection.instance.isRealDevice;
+      // bool isNotTrust = await JailbreakRootDetection.instance.isNotTrust;
+      // bool isRealDevice = await JailbreakRootDetection.instance.isRealDevice;
 
-      if (isNotTrust) {
-        _showError("Perangkat terdeteksi dalam kondisi rooted/jailbroken.");
-        setBusy(false);
-        notifyListeners();
-        return false;
-      }
+      // if (isNotTrust) {
+      //   _showError("Perangkat terdeteksi dalam kondisi rooted/jailbroken.");
+      //   setBusy(false);
+      //   notifyListeners();
+      //   return false;
+      // }
 
-      if (isRealDevice) {
-        _showError("Perangkat terdeteksi dalam kondisi rooted/jailbroken.");
-        setBusy(false);
-        notifyListeners();
-        return false;
-      }
+      // if (isRealDevice) {
+      //   _showError("Perangkat terdeteksi dalam kondisi rooted/jailbroken.");
+      //   setBusy(false);
+      //   notifyListeners();
+      //   return false;
+      // }
 
       // Semua aman
       return true;
