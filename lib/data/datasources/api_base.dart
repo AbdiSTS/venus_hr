@@ -17,4 +17,8 @@ class ApiBase {
   String leaveSaldo() {
     return "$baseUrl/getListDataLeaveSaldo";
   }
+  
+  String assigmentLocation() {
+    return "$baseUrl/getDataMAssignMentLocation";
+  }
 }

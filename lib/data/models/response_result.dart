@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:venus_hr_psti/data/models/user_model.dart';
 
 class ResponseResult {
@@ -26,9 +25,9 @@ class ResponseResult {
     refreshTokens = json['refreshTokens'];
     listData = json['listData'];
 
-    if (json['data'] != null) {
+    if (json['data'] != null && json['data'] is List) {
       userData = (json['data'] as List<dynamic>).map((e) {
-        final Map<String, dynamic> userMap = jsonDecode(e);
+        final Map<String, dynamic> userMap = e as Map<String, dynamic>;
         return UserModel.fromJson(userMap);
       }).toList();
     } else {
@@ -40,12 +39,12 @@ class ResponseResult {
 
   Map<String, dynamic> toMap() {
     final Map<String, dynamic> data = {};
-    data['success'] = this.success;
-    data['message'] = this.message;
-    data['token'] = this.token;
-    data['refreshTokens'] = this.refreshTokens;
-    data['listData'] = this.listData;
-    data['data'] = this.userData?.map((e) => e.toJson()).toList();
+    data['success'] = success;
+    data['message'] = message;
+    data['token'] = token;
+    data['refreshTokens'] = refreshTokens;
+    data['listData'] = listData;
+    data['data'] = userData?.map((e) => e.toMap()).toList();
     return data;
   }
 }

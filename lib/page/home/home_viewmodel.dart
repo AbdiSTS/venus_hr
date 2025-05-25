@@ -10,7 +10,7 @@ import 'package:venus_hr_psti/data/datasources/api_services.dart';
 import 'package:venus_hr_psti/data/datasources/local_services.dart';
 import 'package:venus_hr_psti/data/models/response_result.dart';
 import 'package:venus_hr_psti/page/splash_screen/splash_screen.dart';
-
+import 'package:jailbreak_root_detection/jailbreak_root_detection.dart';
 import '../../core/constants/colors.dart';
 import '../../data/models/list_dynamic_model.dart';
 import '../../state_global/state_global.dart';
@@ -20,11 +20,13 @@ class HomeViewmodel extends FutureViewModel {
   HomeViewmodel({this.ctx});
   ResponseResult? dataUser;
 
+  bool foundInRange = false;
   LatLng? currentLocation;
   String? address;
   String? namaJalan;
 
   ListDynamicModel? listSaldoLeave;
+  ListDynamicModel? listAssigmentLocation;
 
   logout() async {
     setBusy(true);
@@ -52,7 +54,80 @@ class HomeViewmodel extends FutureViewModel {
     }
   }
 
-  checkLocationPermission() async {
+  getLeaveSaldo() async {
+    try {
+      final dataLeaveSaldo = await ApiServices().getLeaveSaldo();
+      print("dataLeaveSaldo : ${dataLeaveSaldo.listData}");
+      if (dataLeaveSaldo.success == true) {
+        listSaldoLeave = dataLeaveSaldo;
+        notifyListeners();
+      } else {
+        setBusy(false);
+      }
+    } catch (e) {
+      print("Error Saldo Leave : ${e}");
+      setBusy(false);
+    }
+  }
+
+  setLocationName() async {
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+
+    currentLocation = LatLng(position.latitude, position.longitude);
+
+    List<Placemark> placemarks = await placemarkFromCoordinates(
+        currentLocation!.latitude, currentLocation!.longitude);
+    Placemark placemark = placemarks[0];
+    address =
+        "${placemark.street}, ${placemark.name}, ${placemark.subLocality}, ${placemark.postalCode}, ${placemark.locality}, ${placemark.subAdministrativeArea}, ${placemark.administrativeArea}, ${placemark.country}";
+    namaJalan = "${placemark.street}";
+    notifyListeners();
+  }
+
+  postAbsen() async {
+    try {
+      setBusy(true);
+      final response = await assigmentLocation();
+      if (response) {
+        setBusy(false);
+        notifyListeners();
+      }
+    } catch (e) {
+      _showError('Error : ${e}');
+      setBusy(false);
+      notifyListeners();
+    }
+  }
+
+// ======================FUNCTION PENGECEKAN============================================= //
+
+  Future<bool> cekRangeLocation(List<dynamic> data) async {
+    int index = 0; // Inisialisasi indeks untuk while loop
+    Position userPosition = await Geolocator.getCurrentPosition();
+    while (index < data.length && !foundInRange) {
+      double allowedRadius = data[index]['Radius'] ?? 100;
+      String? latlong = data[index]['Coordinates'];
+
+      double distance = Geolocator.distanceBetween(
+        userPosition.latitude,
+        userPosition.longitude,
+        double.parse(latlong?.split(',')[0] ?? '0.0'),
+        double.parse(latlong?.split(',')[1] ?? '0.0'),
+      );
+
+      if (distance <= allowedRadius) {
+        foundInRange = true;
+        notifyListeners();
+      }
+
+      index++;
+    }
+    notifyListeners();
+    return foundInRange; // Kembalikan true jika ditemukan jarak <= 0.1
+  }
+
+  Future<bool> checkLocationPermission() async {
     bool serviceEnabled;
     LocationPermission permission;
 
@@ -80,68 +155,120 @@ class HomeViewmodel extends FutureViewModel {
     return true; // Lokasi diberikan izin
   }
 
-  getAddressLocation() async {
+  Future<bool> isLocationValid() async {
     try {
-      setBusy(true);
-      final cekLocations = await checkLocationPermission();
-      if (cekLocations == true) {
-        final positionFake = await Geolocator.getCurrentPosition();
-        if (positionFake.isMocked) {
-          ScaffoldMessenger.of(ctx!).showSnackBar(
-            const SnackBar(
-              content: Text('Anda menggunakan lokasi palsu'),
-              backgroundColor: AppColors.red,
-            ),
-          );
-        } else {
-          Position position = await Geolocator.getCurrentPosition(
-              desiredAccuracy: LocationAccuracy.high);
+      // Ambil lokasi
+      Position position = await Geolocator.getCurrentPosition();
 
-          currentLocation = LatLng(position.latitude, position.longitude);
-
-          List<Placemark> placemarks = await placemarkFromCoordinates(
-              currentLocation!.latitude, currentLocation!.longitude);
-          Placemark placemark = placemarks[0];
-          address =
-              "${placemark.street}, ${placemark.name}, ${placemark.subLocality}, ${placemark.postalCode}, ${placemark.locality}, ${placemark.subAdministrativeArea}, ${placemark.administrativeArea}, ${placemark.country}";
-          namaJalan = "${placemark.street}";
-          setBusy(false);
-          notifyListeners();
-        }
-      } else {
-        namaJalan = 'location permission not granted';
+      // Cek lokasi palsu
+      if (position.isMocked) {
+        _showError("You are using a fake location.");
         setBusy(false);
         notifyListeners();
+        return false;
       }
-    } on PlatformException catch (e) {
-      setBusy(false);
-      notifyListeners();
+
+      bool isNotTrust = await JailbreakRootDetection.instance.isNotTrust;
+      bool isRealDevice = await JailbreakRootDetection.instance.isRealDevice;
+
+      if (isNotTrust) {
+        _showError("Perangkat terdeteksi dalam kondisi rooted/jailbroken.");
+        setBusy(false);
+        notifyListeners();
+        return false;
+      }
+
+      if (isRealDevice) {
+        _showError("Perangkat terdeteksi dalam kondisi rooted/jailbroken.");
+        setBusy(false);
+        notifyListeners();
+        return false;
+      }
+
+      // Semua aman
+      return true;
     } catch (e) {
+      _showError("Terjadi kesalahan saat memeriksa lokasi: $e");
       setBusy(false);
       notifyListeners();
+      return false;
     }
   }
 
-  getLeaveSaldo() async {
+  locationCheck() async {
     try {
-      final dataLeaveSaldo = await ApiServices().getLeaveSaldo();
-      print("dataLeaveSaldo : ${dataLeaveSaldo.listData}");
-      if (dataLeaveSaldo.success == true) {
-        listSaldoLeave = dataLeaveSaldo;
-        notifyListeners();
+      setBusy(true);
+      Future.delayed(Duration(seconds: 3), () async {
+        final cekPermissionLocation = await checkLocationPermission();
+        if (!cekPermissionLocation) {
+          _showError("location permission not granted");
+          setBusy(false);
+          notifyListeners();
+        } else {
+          setLocationName();
+          setBusy(false);
+          notifyListeners();
+        }
+      });
+    } catch (e) {}
+  }
+
+  Future<bool> assigmentLocation() async {
+    try {
+      final dataAssisgmentLocation = await ApiServices().getAssigmentLocation();
+      print("dataAssisgmentLocation : ${dataAssisgmentLocation.listData}");
+      if (dataAssisgmentLocation.success == true) {
+        if (dataAssisgmentLocation.listData!.isEmpty) {
+          _showError('Location not set yet');
+          notifyListeners();
+          setBusy(false);
+          return false;
+        } else {
+          final cekValidLocation = await isLocationValid();
+          if (!cekValidLocation) {
+            notifyListeners();
+            setBusy(false);
+            return false;
+          } else {
+            await cekRangeLocation(dataAssisgmentLocation.listData!);
+            if (foundInRange) {
+              // POST ABSEN
+              notifyListeners();
+              setBusy(false);
+              return true;
+            } else {
+              _showError("You are out of location range");
+              setBusy(false);
+              notifyListeners();
+              return false;
+            }
+          }
+        }
       } else {
         setBusy(false);
+        notifyListeners();
+        return false;
       }
     } catch (e) {
-      print("Error Saldo Leave : ${e}");
+      print("Error assigmentLocation : ${e}");
       setBusy(false);
+      return false;
     }
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(ctx!).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+      ),
+    );
   }
 
   getAllFunction() async {
     setBusy(true);
     await getDataUser();
-    await getAddressLocation();
+    await locationCheck();
     await getLeaveSaldo();
     setBusy(false);
   }

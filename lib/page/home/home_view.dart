@@ -172,7 +172,7 @@ class _HomeViewState extends State<HomeView> {
                                           ),
                                           InkWell(
                                             onTap: () {
-                                              vm.getAddressLocation();
+                                              vm.locationCheck();
                                             },
                                             child: CircleAvatar(
                                               backgroundColor: Colors.white,
@@ -312,9 +312,10 @@ class _HomeViewState extends State<HomeView> {
                         physics: const NeverScrollableScrollPhysics(),
                         children: [
                           BouncingButton(
-                              urlImage: "assets/images/check_in.png",
-                              judul: "Check In",
-                              onTap: () => {}),
+                            urlImage: "assets/images/check_in.png",
+                            judul: "Check In",
+                            onTap: () => vm.postAbsen(),
+                          ),
                           GestureDetector(
                             child: Card(
                               elevation: 5,

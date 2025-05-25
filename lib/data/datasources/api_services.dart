@@ -43,13 +43,14 @@ class ApiServices extends ChangeNotifier {
   Future<bool> hasInternetAccess() async {
     try {
       var connectivityResult = await Connectivity().checkConnectivity();
-
+      print("connectivityResult : ${connectivityResult}");
       if (connectivityResult.contains(ConnectivityResult.wifi)) {
-        final result =
-            await http.get(Uri.parse('https://www.google.com')).timeout(
-                  const Duration(seconds: 5),
-                );
-
+        final result = await http
+            .get(Uri.parse('https://api.sinergiteknologi.co.id/ApiVenusHR'))
+            .timeout(
+              const Duration(seconds: 5),
+            );
+        print("result.statusCode  : ${result.statusCode}");
         return result.statusCode == 200;
       } else if (connectivityResult.contains(ConnectivityResult.mobile)) {
         if (connectivityResult.contains(ConnectivityResult.none)) {
@@ -89,14 +90,15 @@ class ApiServices extends ChangeNotifier {
           headers: getHeaders(),
           body: jsonEncode({'data': encryptData(jsonEncode(dataJson))}));
       print("data body : ${jsonDecode(response.body)}");
-      if (response.statusCode == 201) {
+      print("data status code : ${response.statusCode}");
+      if (response.statusCode == 200) {
         return ResponseResult.fromJson(jsonDecode(response.body));
       } else {
         return ResponseResult.fromJson(jsonDecode(response.body));
       }
     } catch (e) {
       print("Error Login : ${e}");
-      return ResponseResult(message: '');
+      return ResponseResult(message: 'Failed Login');
     }
   }
 
@@ -124,33 +126,6 @@ class ApiServices extends ChangeNotifier {
 
   // ======================================= HOME ============================================================= //
 
-  Future<bool> checkLocationRange(List<dynamic> data) async {
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.bestForNavigation);
-
-    for (var location in data) {
-      String? coordinate = location['Coordinates'];
-
-      double latitude = double.parse(coordinate!.split(',')[0]);
-      double longitude = double.parse(coordinate.split(',')[1]);
-
-      double distance = Geolocator.distanceBetween(
-        latitude,
-        longitude,
-        position.latitude,
-        position.longitude,
-      );
-
-      if (distance <= 500) {
-        getTimeZone = location['TimeZone'] ?? '';
-        notifyListeners();
-        return true;
-      } else {}
-    }
-    notifyListeners();
-    return false;
-  }
-
   Future<ListDynamicModel> getLeaveSaldo() async {
     final getUser = await LocalServices().getAuthData();
     final Map<String, dynamic> dataJson = {
@@ -164,6 +139,34 @@ class ApiServices extends ChangeNotifier {
       'appName': '${ApiBase.appName}',
     };
     final url = Uri.parse(ApiBase().leaveSaldo());
+    final response = await http.post(url,
+        headers: getHeaders(),
+        body: jsonEncode({'data': encryptData(jsonEncode(dataJson))}));
+
+    if (response.statusCode == 200) {
+      List<dynamic> jsonResponse = json.decode(response.body);
+      print("json response : ${jsonResponse}");
+
+      return ListDynamicModel(
+        success: true,
+        listData: jsonDecode(response.body),
+      );
+    } else {
+      return ListDynamicModel(
+        success: false,
+        listData: [],
+      );
+    }
+  }
+
+  Future<ListDynamicModel> getAssigmentLocation() async {
+    final getUser = await LocalServices().getAuthData();
+    final Map<String, dynamic> dataJson = {
+      'host': ApiBase.hostServer,
+      'dbName': ApiBase.dbName,
+      'employee': '${getUser?.userData?[0].employeeID}',
+    };
+    final url = Uri.parse(ApiBase().assigmentLocation());
     final response = await http.post(url,
         headers: getHeaders(),
         body: jsonEncode({'data': encryptData(jsonEncode(dataJson))}));

@@ -20,6 +20,10 @@
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This application requires access to your location to determine the distance to a specified location.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This application requires access to your photo library to upload proof of permission such as sick notes and other needs in the form of images</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
