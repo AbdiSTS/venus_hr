@@ -14,7 +14,7 @@ class ListDynamicModel {
   ListDynamicModel.fromJson(Map<String, dynamic> json) {
     success = json['success'];
     message = json['message'];
-    listData = json['listData'];
+    listData = json['listData'] ?? [];
   }
 
   String toJson() => json.encode(toMap());

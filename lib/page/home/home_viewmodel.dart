@@ -24,8 +24,10 @@ class HomeViewmodel extends FutureViewModel {
   LatLng? currentLocation;
   String? address;
   String? namaJalan;
+  String? latlang;
 
   ListDynamicModel? listSaldoLeave;
+  ListDynamicModel? listDateHoliday = new ListDynamicModel();
   ListDynamicModel? listAssigmentLocation;
 
   logout() async {
@@ -70,6 +72,22 @@ class HomeViewmodel extends FutureViewModel {
     }
   }
 
+  getDateHoliday() async {
+    try {
+      final dataDateHoliday = await ApiServices().getDateHoliday();
+
+      if (dataDateHoliday.success == true) {
+        listDateHoliday = dataDateHoliday;
+        notifyListeners();
+      } else {
+        setBusy(false);
+      }
+    } catch (e) {
+      print("Error Saldo Leave : ${e}");
+      setBusy(false);
+    }
+  }
+
   setLocationName() async {
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
@@ -78,6 +96,7 @@ class HomeViewmodel extends FutureViewModel {
 
     List<Placemark> placemarks = await placemarkFromCoordinates(
         currentLocation!.latitude, currentLocation!.longitude);
+    latlang = '${currentLocation!.latitude},${currentLocation!.longitude}';
     Placemark placemark = placemarks[0];
     address =
         "${placemark.street}, ${placemark.name}, ${placemark.subLocality}, ${placemark.postalCode}, ${placemark.locality}, ${placemark.subAdministrativeArea}, ${placemark.administrativeArea}, ${placemark.country}";
@@ -85,11 +104,19 @@ class HomeViewmodel extends FutureViewModel {
     notifyListeners();
   }
 
-  postAbsen() async {
+  postAbsen(String? typeAbsen) async {
     try {
       setBusy(true);
       final response = await assigmentLocation();
+
       if (response) {
+        await setLocationName();
+        final response = await ApiServices().postAbsen(
+          typeAbsen,
+          latlang,
+          namaJalan,
+        );
+        _showSuccess('${response.message}');
         setBusy(false);
         notifyListeners();
       }
@@ -245,6 +272,7 @@ class HomeViewmodel extends FutureViewModel {
           }
         }
       } else {
+        _showError("Failed Assigment Location");
         setBusy(false);
         notifyListeners();
         return false;
@@ -259,8 +287,19 @@ class HomeViewmodel extends FutureViewModel {
   void _showError(String message) {
     ScaffoldMessenger.of(ctx!).showSnackBar(
       SnackBar(
+        duration: Duration(seconds: 2),
         content: Text(message),
         backgroundColor: Colors.red,
+      ),
+    );
+  }
+
+  void _showSuccess(String message) {
+    ScaffoldMessenger.of(ctx!).showSnackBar(
+      SnackBar(
+        duration: Duration(seconds: 2),
+        content: Text(message),
+        backgroundColor: Colors.green,
       ),
     );
   }
@@ -270,6 +309,7 @@ class HomeViewmodel extends FutureViewModel {
     await getDataUser();
     await locationCheck();
     await getLeaveSaldo();
+    await getDateHoliday();
     setBusy(false);
   }
 

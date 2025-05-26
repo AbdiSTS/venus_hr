@@ -89,8 +89,7 @@ class ApiServices extends ChangeNotifier {
       final response = await http.post(url,
           headers: getHeaders(),
           body: jsonEncode({'data': encryptData(jsonEncode(dataJson))}));
-      print("data body : ${jsonDecode(response.body)}");
-      print("data status code : ${response.statusCode}");
+
       if (response.statusCode == 200) {
         return ResponseResult.fromJson(jsonDecode(response.body));
       } else {
@@ -175,6 +174,188 @@ class ApiServices extends ChangeNotifier {
       List<dynamic> jsonResponse = json.decode(response.body);
       print("json response : ${jsonResponse}");
 
+      return ListDynamicModel(
+        success: true,
+        listData: jsonDecode(response.body),
+      );
+    } else {
+      return ListDynamicModel(
+        success: false,
+        listData: [],
+      );
+    }
+  }
+
+  Future<ListDynamicModel> getDateHoliday() async {
+    final Map<String, dynamic> dataJson = {
+      'host': ApiBase.hostServer,
+      'dbName': ApiBase.dbName,
+    };
+    final url = Uri.parse(ApiBase().dateHoliday());
+    final response = await http.post(url,
+        headers: getHeaders(),
+        body: jsonEncode({'data': encryptData(jsonEncode(dataJson))}));
+
+    if (response.statusCode == 200) {
+      List<dynamic> jsonResponse = json.decode(response.body);
+      print("json response : ${jsonResponse}");
+
+      return ListDynamicModel(
+        success: true,
+        listData: jsonDecode(response.body),
+      );
+    } else {
+      return ListDynamicModel(
+        success: false,
+        listData: [],
+      );
+    }
+  }
+
+  Future<ListDynamicModel> getMonthlyPeriode() async {
+    final getUser = await LocalServices().getAuthData();
+    final Map<String, dynamic> dataJson = {
+      'host': ApiBase.hostServer,
+      'dbName': ApiBase.dbName,
+      "busCode": "${getUser?.userData?[0].busCode}",
+      "date1": "${DateFormat('yyyy-MM-dd').format(DateTime.now())}",
+      "date2": "${DateFormat('yyyy-MM-dd').format(DateTime.now())}",
+    };
+    final url = Uri.parse(ApiBase().monthlyPeriode());
+    final response = await http.post(url,
+        headers: getHeaders(),
+        body: jsonEncode({'data': encryptData(jsonEncode(dataJson))}));
+
+    if (response.statusCode == 200) {
+      List<dynamic> jsonResponse = json.decode(response.body);
+      print("json response : ${jsonResponse}");
+
+      return ListDynamicModel(
+        success: true,
+        listData: jsonDecode(response.body),
+      );
+    } else {
+      return ListDynamicModel(
+        success: false,
+        listData: [],
+      );
+    }
+  }
+
+  Future<String> getNumberAbsen(String? periode) async {
+    final getUser = await LocalServices().getAuthData();
+    final Map<String, dynamic> dataJson = {
+      'host': ApiBase.hostServer,
+      'dbName': ApiBase.dbName,
+      "employee": "${getUser?.userData?[0].employeeID}",
+      "periode": "${periode}",
+    };
+    final url = Uri.parse(ApiBase().getNumberAbsen());
+    final response = await http.post(url,
+        headers: getHeaders(),
+        body: jsonEncode({'data': encryptData(jsonEncode(dataJson))}));
+
+    if (response.statusCode == 200) {
+      List<dynamic> jsonResponse = json.decode(response.body);
+      print("json response getNumberAbsen : ${jsonResponse}");
+
+      return '${jsonResponse[0]['TADetailNumber']}';
+    } else {
+      return '';
+    }
+  }
+
+  Future<ResponseResult> postAbsen(
+      String? typeAbsen, String? latlang, String? address) async {
+    try {
+      final getMonthlyPeriodes = await getMonthlyPeriode();
+
+      if (getMonthlyPeriodes.listData!.isEmpty) {
+        return ResponseResult(success: false, message: 'Periode not yet set');
+      } else {
+        final autoNumber =
+            await getNumberAbsen(getMonthlyPeriodes.listData![0]['Periode']);
+
+        final getUser = await LocalServices().getAuthData();
+        final Map<String, dynamic> dataJson = {
+          'host': ApiBase.hostServer,
+          'dbName': ApiBase.dbName,
+          "BusCode": "${getUser?.userData?[0].busCode}",
+          "TAPeriode": "${getMonthlyPeriodes.listData![0]['Periode']}",
+          "TADetailNumber": "${autoNumber}",
+          "EmployeeId": "${getUser?.userData?[0].employeeID}",
+          "InOut": "${typeAbsen}",
+          "LatLang": "${latlang}",
+          "Location": "${address}",
+        };
+        final url = Uri.parse(ApiBase().postAbsen());
+        final response = await http.post(url,
+            headers: getHeaders(),
+            body: jsonEncode({'data': encryptData(jsonEncode(dataJson))}));
+
+        if (response.statusCode == 201) {
+          return ResponseResult(
+              success: true,
+              message: '${jsonDecode(response.body)['message']}');
+        } else {
+          return ResponseResult(
+              success: false, listData: jsonDecode(response.body));
+        }
+      }
+    } catch (e) {
+      print("Error Absen : ${e}");
+      return ResponseResult(success: false, listData: [
+        {'Error Absen': '${e}'}
+      ]);
+    }
+  }
+
+// ====================================== PERMISSION  ============================================================ //
+
+  Future<ListDynamicModel> getRangeDate() async {
+    final getUser = await LocalServices().getAuthData();
+    final Map<String, dynamic> dataJson = {
+      'host': ApiBase.hostServer,
+      'dbName': ApiBase.dbName,
+      'busCode': '${getUser?.userData?[0].busCode}',
+      'date': '${DateFormat('yyyy/MM/dd').format(DateTime.now())}',
+    };
+    final url = Uri.parse(ApiBase().getRangeDate());
+    final response = await http.post(url,
+        headers: getHeaders(),
+        body: jsonEncode({'data': encryptData(jsonEncode(dataJson))}));
+
+    if (response.statusCode == 200) {
+      List<dynamic> jsonResponse = json.decode(response.body);
+      print("json response : ${jsonResponse}");
+
+      return ListDynamicModel(
+        success: true,
+        listData: jsonDecode(response.body),
+      );
+    } else {
+      return ListDynamicModel(
+        success: false,
+        listData: [],
+      );
+    }
+  }
+
+  Future<ListDynamicModel> getApproverRequest() async {
+    final getUser = await LocalServices().getAuthData();
+    final Map<String, dynamic> dataJson = {
+      'host': ApiBase.hostServer,
+      'dbName': ApiBase.dbName,
+      'busCode': '${getUser?.userData?[0].busCode}',
+      'employee': '${getUser?.userData?[0].employeeID}',
+    };
+    final url = Uri.parse(ApiBase().getApproverRequest());
+    final response = await http.post(url,
+        headers: getHeaders(),
+        body: jsonEncode({'data': encryptData(jsonEncode(dataJson))}));
+    print("response approvar : ${jsonDecode(response.body)}");
+    print("response approvar : ${response.statusCode}");
+    if (response.statusCode == 201) {
       return ListDynamicModel(
         success: true,
         listData: jsonDecode(response.body),

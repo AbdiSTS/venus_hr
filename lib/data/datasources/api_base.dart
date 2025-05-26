@@ -1,10 +1,10 @@
 class ApiBase {
-  static const String appName = 'com.example.venushr_10_dipo_mobile';
+  static const String appName = 'com.example.nusantara_ess';
   static const String version = 'v1.8';
   static const String baseUrl =
       'https://api.sinergiteknologi.co.id/ApiVenusHR/api/mobile/';
-  static const String hostServer = 'MARSSERVER';
-  static const String dbName = 'VenusHR10_Dipo';
+  static const String hostServer = 'IMPLEMENTSERVER';
+  static const String dbName = 'VenusHR13';
 
   String login() {
     return '$baseUrl/loginUser';
@@ -17,8 +17,32 @@ class ApiBase {
   String leaveSaldo() {
     return "$baseUrl/getListDataLeaveSaldo";
   }
-  
+
   String assigmentLocation() {
     return "$baseUrl/getDataMAssignMentLocation";
+  }
+
+  String dateHoliday() {
+    return "$baseUrl/getDateHoliday";
+  }
+
+  String monthlyPeriode() {
+    return "$baseUrl/getMonthlyPeriode";
+  }
+
+  String getNumberAbsen() {
+    return "$baseUrl/getNumberAbsen";
+  }
+
+  String postAbsen() {
+    return "$baseUrl/postDataAbsen";
+  }
+
+  String getRangeDate() {
+    return "$baseUrl/getRangeDate";
+  }
+
+  String getApproverRequest() {
+    return "$baseUrl/getApprover";
   }
 }

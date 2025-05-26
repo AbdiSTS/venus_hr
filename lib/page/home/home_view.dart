@@ -3,20 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-
+import 'package:venus_hr_psti/core/components/card_holiday_view.dart';
 import 'package:venus_hr_psti/core/extensions/date_time_ext.dart';
 import 'package:venus_hr_psti/page/home/attendance_log/attendance_log_view.dart';
 import 'package:venus_hr_psti/page/home/home_viewmodel.dart';
 import 'package:venus_hr_psti/page/home/leave/leave_view.dart';
 import 'package:venus_hr_psti/page/home/overtime/overtime_view.dart';
 import 'package:venus_hr_psti/page/home/permission/permision_view.dart';
-import 'package:venus_hr_psti/page/splash_screen/splash_screen.dart';
 import 'package:stacked/stacked.dart';
 import '../../core/assets/assets.gen.dart';
 import '../../core/components/button_bouncing.dart';
-import '../../core/components/dotten_vertical.dart';
-import '../../core/components/styles.dart';
-import '../../core/constants/colors.dart';
 import '../../state_global/state_global.dart';
 
 class HomeView extends StatefulWidget {
@@ -298,182 +294,95 @@ class _HomeViewState extends State<HomeView> {
                 ),
                 Expanded(
                   flex: 2,
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: GridView(
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 16.0,
-                          mainAxisSpacing: 16.0,
-                        ),
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
+                  child: RefreshIndicator(
+                    backgroundColor: Colors.white,
+                    onRefresh: () async {
+                      await vm.getAllFunction();
+                    },
+                    child: SingleChildScrollView(
+                      child: Column(
                         children: [
-                          BouncingButton(
-                            urlImage: "assets/images/check_in.png",
-                            judul: "Check In",
-                            onTap: () => vm.postAbsen(),
+                          CardHolidayView(
+                            vm: vm,
                           ),
-                          GestureDetector(
-                            child: Card(
-                              elevation: 5,
-                              color: Colors.white,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Image.asset(
-                                    "assets/images/check_out.png",
-                                    width: 70,
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  Text(
-                                    "Check Out",
-                                    style: GoogleFonts.lato(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  )
-                                ],
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: GridView(
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                crossAxisSpacing: 16.0,
+                                mainAxisSpacing: 16.0,
                               ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => PermisionView())),
-                            child: Card(
-                              elevation: 5,
-                              color: Colors.white,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Image.asset(
-                                    "assets/images/permission.png",
-                                    width: 70,
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  Text(
-                                    "Permission",
-                                    style: GoogleFonts.lato(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => AttendanceLogView())),
-                            child: Card(
-                              elevation: 5,
-                              color: Colors.white,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Image.asset(
-                                    "assets/images/attendance.png",
-                                    width: 70,
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  Text(
-                                    "Attendance Log",
-                                    style: GoogleFonts.lato(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => LeaveView())),
-                            child: Card(
-                              elevation: 5,
-                              color: Colors.white,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Image.asset(
-                                    "assets/images/calender.png",
-                                    width: 70,
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  Text(
-                                    "Leave",
-                                    style: GoogleFonts.lato(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => OvertimeView())),
-                            child: Card(
-                              elevation: 5,
-                              color: Colors.white,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Image.asset(
-                                    "assets/images/overtime.png",
-                                    width: 70,
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  Text(
-                                    "Overtime",
-                                    style: GoogleFonts.lato(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                          GestureDetector(
-                            child: Card(
-                              elevation: 5,
-                              color: Colors.white,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Image.asset(
-                                    "assets/images/slip_gaji.png",
-                                    width: 70,
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  Text(
-                                    "Slip Gaji",
-                                    style: GoogleFonts.lato(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  )
-                                ],
-                              ),
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              children: [
+                                BouncingButton(
+                                  urlImage: "assets/images/check_in.png",
+                                  judul: "Check In",
+                                  onTap: () => vm.postAbsen('IN'),
+                                ),
+                                BouncingButton(
+                                  urlImage: "assets/images/check_out.png",
+                                  judul: "Check Out",
+                                  onTap: () => vm.postAbsen('OUT'),
+                                ),
+                                BouncingButton(
+                                  urlImage: "assets/images/permission.png",
+                                  judul: "Permission",
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                PermisionView()));
+                                  },
+                                ),
+                                BouncingButton(
+                                  urlImage: "assets/images/attendance.png",
+                                  judul: "Attendance Log",
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                AttendanceLogView()));
+                                  },
+                                ),
+                                BouncingButton(
+                                  urlImage: "assets/images/calender.png",
+                                  judul: "Leave",
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => LeaveView()));
+                                  },
+                                ),
+                                BouncingButton(
+                                  urlImage: "assets/images/overtime.png",
+                                  judul: "Overtime",
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                OvertimeView()));
+                                  },
+                                ),
+                                BouncingButton(
+                                  urlImage: "assets/images/slip_gaji.png",
+                                  judul: "Slip Gaji",
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                OvertimeView()));
+                                  },
+                                ),
+                              ],
                             ),
                           ),
                         ],
