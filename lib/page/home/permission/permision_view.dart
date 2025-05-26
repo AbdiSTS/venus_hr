@@ -131,15 +131,24 @@ class _PermisionViewState extends State<PermisionView> {
                                           flex: 2,
                                           child: CustomDatePickerRange(
                                               label: 'From Date',
-                                              startDate: vm.parseDateFromString(
-                                                      vm.getDateFrom) ??
-                                                  DateTime.now(),
+                                              startDate: DateTime(
+                                                  int.parse(vm.getDateFrom
+                                                          ?.split(',')[0]
+                                                          .toString() ??
+                                                      '2025'),
+                                                  int.parse(vm.getDateFrom
+                                                          ?.split(',')[1]
+                                                          .toString() ??
+                                                      '02'),
+                                                  int.parse(vm.getDateFrom
+                                                          ?.split(',')[2]
+                                                          .toString() ??
+                                                      '12')),
                                               onDateSelected: (selectedDate) {
                                                 setState(() {
-                                                  vm.getDateFrom = vm
+                                                  vm.selectedDateFrom = vm
                                                       .formatDate(selectedDate)
                                                       .toString();
-                                                  vm.fromDate = selectedDate;
                                                 });
                                               }),
                                         ),
@@ -150,13 +159,22 @@ class _PermisionViewState extends State<PermisionView> {
                                           flex: 2,
                                           child: CustomDatePickerRange(
                                               label: 'To Date',
-                                              beforeDate: vm.fromDate,
-                                              startDate: vm.parseDateFromString(
-                                                      vm.getDateTo) ??
-                                                  DateTime.now(),
+                                              startDate: DateTime(
+                                                  int.parse(vm.getDateFrom
+                                                          ?.split(',')[0]
+                                                          .toString() ??
+                                                      '2025'),
+                                                  int.parse(vm.getDateFrom
+                                                          ?.split(',')[1]
+                                                          .toString() ??
+                                                      '02'),
+                                                  int.parse(vm.getDateFrom
+                                                          ?.split(',')[2]
+                                                          .toString() ??
+                                                      '12')),
                                               onDateSelected: (selectedDate) {
                                                 setState(() {
-                                                  vm.getDateTo = vm
+                                                  vm.selectedDateTo = vm
                                                       .formatDate(selectedDate)
                                                       .toString();
                                                 });
@@ -342,6 +360,7 @@ class _PermisionViewState extends State<PermisionView> {
                                     const SizedBox(height: 12.0),
                                     Button.filled(
                                       onPressed: () {
+                                        FocusScope.of(context).unfocus();
                                         vm.postPermission();
                                       },
                                       label: 'Create',

@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:stacked/stacked.dart';
 import 'package:venus_hr_psti/data/datasources/api_services.dart';
 import 'package:venus_hr_psti/data/models/list_dynamic_model.dart';
+import 'package:venus_hr_psti/page/bottom_navigator_view.dart';
 import 'package:venus_hr_psti/page/splash_screen/splash_screen.dart';
 
 class PermisionViewmodel extends FutureViewModel {
@@ -16,8 +17,10 @@ class PermisionViewmodel extends FutureViewModel {
   String? selectPermissionRequest;
 
   String? getDateFrom;
-  String? getDateTo;
   DateTime? fromDate;
+
+  String? selectedDateFrom;
+  String? selectedDateTo;
 
   PermisionViewmodel({this.ctx});
 
@@ -112,23 +115,6 @@ class PermisionViewmodel extends FutureViewModel {
     },
   ];
 
-  DateTime? parseDateFromString(String? value) {
-    if (value == null || value.isEmpty) return null;
-
-    try {
-      final parts = value.split(',');
-      if (parts.length < 3) return null;
-
-      final year = int.parse(parts[0]);
-      final month = int.parse(parts[1]);
-      final day = int.parse(parts[2]);
-
-      return DateTime(year, month, day);
-    } catch (e) {
-      return null;
-    }
-  }
-
   List<File> imageFiles = [];
   List<String> imageString = [];
 
@@ -154,9 +140,7 @@ class PermisionViewmodel extends FutureViewModel {
       if (response.success == true) {
         if (response.listData!.isNotEmpty) {
           getDateFrom = DateFormat('yyyy,MM,dd')
-              .format(DateTime.parse(response.listData?[0]['DateFrom']));
-          getDateTo = DateFormat('yyyy,MM,dd')
-              .format(DateTime.parse(response.listData?[0]['DateTo']));
+              .format(DateTime.parse(data[0]['DateFrom']));
 
           notifyListeners();
         } else {
@@ -197,33 +181,54 @@ class PermisionViewmodel extends FutureViewModel {
       setBusy(true);
       final responseToken = await ApiServices().cekToken();
       if (responseToken) {
-        final response = await ApiServices().postPermission(
-            selectTypePermission,
-            reasonController!.text,
-            getDateFrom,
-            getDateTo,
-            selectPermissionRequest);
+        DateTime parseToDateTime =
+            DateFormat('yyyy-MM-dd').parse(selectedDateTo!);
+        DateTime parseFromDateTime =
+            DateFormat('yyyy-MM-dd').parse(selectedDateFrom!);
 
-        if (response.success == true) {
+        if (parseToDateTime.difference(parseFromDateTime).inDays == -1) {
           ScaffoldMessenger.of(ctx!).showSnackBar(
             SnackBar(
               duration: Duration(seconds: 2),
-              content: Text('${response.message}'),
-              backgroundColor: Colors.green,
-            ),
-          );
-          setBusy(false);
-          notifyListeners();
-        } else {
-          ScaffoldMessenger.of(ctx!).showSnackBar(
-            SnackBar(
-              duration: Duration(seconds: 2),
-              content: Text('${response.message}'),
+              content: Text('Failed Date'),
               backgroundColor: Colors.red,
             ),
           );
           setBusy(false);
           notifyListeners();
+        } else {
+          final response = await ApiServices().postPermission(
+            selectTypePermission,
+            reasonController!.text,
+            selectedDateFrom,
+            selectedDateTo,
+            selectPermissionRequest,
+            imageFiles,
+          );
+
+          if (response.success == true) {
+            ScaffoldMessenger.of(ctx!).showSnackBar(
+              SnackBar(
+                duration: Duration(seconds: 2),
+                content: Text('${response.message}'),
+                backgroundColor: Colors.green,
+              ),
+            );
+            Navigator.of(ctx!).pushReplacement(
+                MaterialPageRoute(builder: (context) => BottomNavigatorView()));
+            setBusy(false);
+            notifyListeners();
+          } else {
+            ScaffoldMessenger.of(ctx!).showSnackBar(
+              SnackBar(
+                duration: Duration(seconds: 2),
+                content: Text('${response.message}'),
+                backgroundColor: Colors.red,
+              ),
+            );
+            setBusy(false);
+            notifyListeners();
+          }
         }
       } else {
         ScaffoldMessenger.of(ctx!).showSnackBar(

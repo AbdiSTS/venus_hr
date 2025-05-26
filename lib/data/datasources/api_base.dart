@@ -37,9 +37,17 @@ class ApiBase {
   String postAbsen() {
     return "$baseUrl/postDataAbsen";
   }
-  
+
   String postPermission() {
     return "$baseUrl/postDataPermission";
+  }
+
+  String postDataLeave() {
+    return "$baseUrl/postDataLeave";
+  }
+
+  String postImgAttendance() {
+    return "$baseUrl/postImgAttendance";
   }
 
   String getRangeDate() {
@@ -49,8 +57,20 @@ class ApiBase {
   String getApproverRequest() {
     return "$baseUrl/getApprover";
   }
-  
+
   String getAutoNumberPermission() {
     return "$baseUrl/getAutoNumberPermission";
+  }
+
+  String getAutoNumberLeave() {
+    return "$baseUrl/getAutoNumberLeave";
+  }
+
+  String getListAttendanceLog() {
+    return "$baseUrl/getListAttendanceLog";
+  }
+
+  String getLeaveType() {
+    return "$baseUrl/getLeaveType";
   }
 }

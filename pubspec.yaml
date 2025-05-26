@@ -54,6 +54,7 @@ dependencies:
   google_maps_flutter: ^2.7.0
   geocoding: ^3.0.0
   jailbreak_root_detection: ^1.1.6
+  http_parser: ^4.0.2
   
  
 
