@@ -37,6 +37,10 @@ class ApiBase {
   String postAbsen() {
     return "$baseUrl/postDataAbsen";
   }
+  
+  String postPermission() {
+    return "$baseUrl/postDataPermission";
+  }
 
   String getRangeDate() {
     return "$baseUrl/getRangeDate";
@@ -44,5 +48,9 @@ class ApiBase {
 
   String getApproverRequest() {
     return "$baseUrl/getApprover";
+  }
+  
+  String getAutoNumberPermission() {
+    return "$baseUrl/getAutoNumberPermission";
   }
 }

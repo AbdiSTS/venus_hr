@@ -7,8 +7,10 @@ import 'package:intl/intl.dart';
 import 'package:stacked/stacked.dart';
 import 'package:venus_hr_psti/data/datasources/api_services.dart';
 import 'package:venus_hr_psti/data/models/list_dynamic_model.dart';
+import 'package:venus_hr_psti/page/splash_screen/splash_screen.dart';
 
 class PermisionViewmodel extends FutureViewModel {
+  BuildContext? ctx;
   TextEditingController? reasonController = new TextEditingController();
   String? selectTypePermission;
   String? selectPermissionRequest;
@@ -16,6 +18,8 @@ class PermisionViewmodel extends FutureViewModel {
   String? getDateFrom;
   String? getDateTo;
   DateTime? fromDate;
+
+  PermisionViewmodel({this.ctx});
 
   List<dynamic> listApprover = [];
 
@@ -127,6 +131,7 @@ class PermisionViewmodel extends FutureViewModel {
 
   List<File> imageFiles = [];
   List<String> imageString = [];
+
   Future<void> pickImage() async {
     try {
       XFile? pickedFile =
@@ -185,6 +190,70 @@ class PermisionViewmodel extends FutureViewModel {
       setBusy(false);
       notifyListeners();
     }
+  }
+
+  postPermission() async {
+    try {
+      setBusy(true);
+      final responseToken = await ApiServices().cekToken();
+      if (responseToken) {
+        final response = await ApiServices().postPermission(
+            selectTypePermission,
+            reasonController!.text,
+            getDateFrom,
+            getDateTo,
+            selectPermissionRequest);
+
+        if (response.success == true) {
+          ScaffoldMessenger.of(ctx!).showSnackBar(
+            SnackBar(
+              duration: Duration(seconds: 2),
+              content: Text('${response.message}'),
+              backgroundColor: Colors.green,
+            ),
+          );
+          setBusy(false);
+          notifyListeners();
+        } else {
+          ScaffoldMessenger.of(ctx!).showSnackBar(
+            SnackBar(
+              duration: Duration(seconds: 2),
+              content: Text('${response.message}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          setBusy(false);
+          notifyListeners();
+        }
+      } else {
+        ScaffoldMessenger.of(ctx!).showSnackBar(
+          SnackBar(
+            duration: Duration(seconds: 2),
+            content: Text('Session Expired , Please Login Again'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        Navigator.of(ctx!).pushReplacement(
+            MaterialPageRoute(builder: (context) => SplashScreen()));
+        setBusy(false);
+        notifyListeners();
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(ctx!).showSnackBar(
+        SnackBar(
+          duration: Duration(seconds: 2),
+          content: Text('${e}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      setBusy(false);
+      notifyListeners();
+    }
+  }
+
+  String formatDate(DateTime date) {
+    final dateFormatter = DateFormat('yyyy-MM-dd 00:00:00');
+    return dateFormatter.format(date);
   }
 
   runFunction() async {

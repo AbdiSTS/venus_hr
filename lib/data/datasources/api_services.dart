@@ -265,6 +265,27 @@ class ApiServices extends ChangeNotifier {
     }
   }
 
+  Future<String> getNumberPermission(String? periode) async {
+    final Map<String, dynamic> dataJson = {
+      'host': ApiBase.hostServer,
+      'dbName': ApiBase.dbName,
+      "periode": "${periode}",
+    };
+    final url = Uri.parse(ApiBase().getAutoNumberPermission());
+    final response = await http.post(url,
+        headers: getHeaders(),
+        body: jsonEncode({'data': encryptData(jsonEncode(dataJson))}));
+
+    if (response.statusCode == 200) {
+      List<dynamic> jsonResponse = json.decode(response.body);
+      print("json response getNumberPermission : ${jsonResponse}");
+
+      return '${jsonResponse[0]['AutoNo']}';
+    } else {
+      return '';
+    }
+  }
+
   Future<ResponseResult> postAbsen(
       String? typeAbsen, String? latlang, String? address) async {
     try {
@@ -365,6 +386,77 @@ class ApiServices extends ChangeNotifier {
         success: false,
         listData: [],
       );
+    }
+  }
+
+  Future<ResponseResult> postPermission(
+    String? permissionType,
+    String? reason,
+    String? fromDate,
+    String? toDate,
+    String? appRequest,
+  ) async {
+    try {
+      final getUser = await LocalServices().getAuthData();
+      final getMonthlyPeriodes = await getMonthlyPeriode();
+      if (getMonthlyPeriodes.listData!.isNotEmpty) {
+        final getAutoNumber = await getNumberPermission(
+            getMonthlyPeriodes.listData![0]['Periode']);
+
+        DateTime parseToDateTime = DateFormat('yyyy-MM-dd').parse(toDate!);
+        DateTime parseFromDateTime = DateFormat('yyyy-MM-dd').parse(fromDate!);
+
+        final Map<String, dynamic> dataJson = {
+          'host': ApiBase.hostServer,
+          'dbName': ApiBase.dbName,
+          "BusCode": "${getUser?.userData?[0].busCode}",
+          "AbsNumber":
+              "ABS/${getUser?.userData?[0].busCode}/${getMonthlyPeriodes.listData![0]['Periode']}/${getAutoNumber}",
+          "Periode": "${getMonthlyPeriodes.listData![0]['Periode']}",
+          "EmployeeID": "${getUser?.userData?[0].employeeID}",
+          "ApprovedBy": "",
+          "AbsType": "${permissionType}",
+          "AbsReason": "${reason}",
+          "NoticedDate":
+              "${DateFormat('yyyy-MM-dd 00:00:00').format(DateTime.now())}",
+          "FromDate": "${toDate}",
+          "ToDate": "${fromDate}",
+          "Description": "",
+          "Duration":
+              "${parseFromDateTime.difference(parseToDateTime).inDays + 1}",
+          "AppDescription": "",
+          "AppRequest": "${appRequest}",
+          "AppStatus": "",
+          "UserCreated": "${getUser?.userData?[0].userId}",
+          "DateCreated":
+              "${DateFormat('yyyy-MM-dd 00:00:00').format(DateTime.now())}",
+          "TimeCreated": "${DateFormat('kkmmss').format(DateTime.now())}",
+          "UserModified": "",
+          "TimeModified": "",
+        };
+
+        final url = Uri.parse(ApiBase().postPermission());
+        final response = await http.post(url,
+            headers: getHeaders(),
+            body: jsonEncode({'data': encryptData(jsonEncode(dataJson))}));
+        print("jsonDecode(response.body) : ${jsonDecode(response.body)}");
+        if (response.statusCode == 201) {
+          return ResponseResult(
+            success: true,
+            message: jsonDecode(response.body)['message'],
+          );
+        } else {
+          return ResponseResult(
+            success: false,
+            message: jsonDecode(response.body)['message'],
+          );
+        }
+      } else {
+        return ResponseResult(success: false, message: 'Periode not yet set');
+      }
+    } catch (e) {
+      print("Error : ${e}");
+      return ResponseResult(success: false, message: 'Error : ${e}');
     }
   }
 }

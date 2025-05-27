@@ -43,7 +43,7 @@ class _CardHolidayViewState extends State<CardHolidayView> {
                 elevation: 5,
                 color: Colors.white,
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(20),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

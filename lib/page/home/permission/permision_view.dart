@@ -29,7 +29,7 @@ class _PermisionViewState extends State<PermisionView> {
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder.reactive(
-        viewModelBuilder: () => PermisionViewmodel(),
+        viewModelBuilder: () => PermisionViewmodel(ctx: context),
         builder: (context, vm, child) {
           return GestureDetector(
               onTap: () {
@@ -135,10 +135,12 @@ class _PermisionViewState extends State<PermisionView> {
                                                       vm.getDateFrom) ??
                                                   DateTime.now(),
                                               onDateSelected: (selectedDate) {
-                                                // fromdatePermissionController?.text =
-                                                //     formatDate(selectedDate).toString();
-
-                                                vm.fromDate = selectedDate;
+                                                setState(() {
+                                                  vm.getDateFrom = vm
+                                                      .formatDate(selectedDate)
+                                                      .toString();
+                                                  vm.fromDate = selectedDate;
+                                                });
                                               }),
                                         ),
                                         SizedBox(
@@ -153,8 +155,11 @@ class _PermisionViewState extends State<PermisionView> {
                                                       vm.getDateTo) ??
                                                   DateTime.now(),
                                               onDateSelected: (selectedDate) {
-                                                // fromdatePermissionController?.text =
-                                                //     formatDate(selectedDate).toString();
+                                                setState(() {
+                                                  vm.getDateTo = vm
+                                                      .formatDate(selectedDate)
+                                                      .toString();
+                                                });
 
                                                 // fromDate = selectedDate;
                                               }),
@@ -336,7 +341,9 @@ class _PermisionViewState extends State<PermisionView> {
                                     ),
                                     const SizedBox(height: 12.0),
                                     Button.filled(
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        vm.postPermission();
+                                      },
                                       label: 'Create',
                                     ),
                                   ],
