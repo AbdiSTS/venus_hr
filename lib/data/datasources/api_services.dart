@@ -682,4 +682,57 @@ class ApiServices extends ChangeNotifier {
       return ResponseResult(success: false, message: 'Error : ${e}');
     }
   }
+
+// ================================ REQUEST =================================================================== //
+  Future<ListDynamicModel> getListMyRequest() async {
+    final getUser = await LocalServices().getAuthData();
+    final Map<String, dynamic> dataJson = {
+      'host': ApiBase.hostServer,
+      'dbName': ApiBase.dbName,
+      'employee': '${getUser?.userData?[0].employeeID}',
+    };
+
+    final url = Uri.parse(ApiBase().getListMyRequest());
+    final response = await http.post(url,
+        headers: getHeaders(),
+        body: jsonEncode({'data': encryptData(jsonEncode(dataJson))}));
+
+    if (response.statusCode == 201) {
+      return ListDynamicModel(
+        success: true,
+        listData: jsonDecode(response.body),
+      );
+    } else {
+      return ListDynamicModel(
+        success: false,
+        listData: [],
+      );
+    }
+  }
+
+  Future<ListDynamicModel> getListApproveRequest() async {
+    final getUser = await LocalServices().getAuthData();
+    final Map<String, dynamic> dataJson = {
+      'host': ApiBase.hostServer,
+      'dbName': ApiBase.dbName,
+      'employee': '${getUser?.userData?[0].employeeID}',
+    };
+
+    final url = Uri.parse(ApiBase().getListApproveRequest());
+    final response = await http.post(url,
+        headers: getHeaders(),
+        body: jsonEncode({'data': encryptData(jsonEncode(dataJson))}));
+
+    if (response.statusCode == 201) {
+      return ListDynamicModel(
+        success: true,
+        listData: jsonDecode(response.body),
+      );
+    } else {
+      return ListDynamicModel(
+        success: false,
+        listData: [],
+      );
+    }
+  }
 }

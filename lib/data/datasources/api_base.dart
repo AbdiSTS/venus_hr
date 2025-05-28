@@ -73,4 +73,12 @@ class ApiBase {
   String getLeaveType() {
     return "$baseUrl/getLeaveType";
   }
+
+  String getListMyRequest() {
+    return "$baseUrl/getListMyRequest";
+  }
+
+  String getListApproveRequest() {
+    return "$baseUrl/getListApproveRequest";
+  }
 }

@@ -3,26 +3,68 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:venus_hr_psti/core/components/card_list_approve_request.dart';
+import 'package:venus_hr_psti/core/components/card_holiday_view.dart';
 import 'package:venus_hr_psti/core/components/dotten_vertical.dart';
-import 'package:venus_hr_psti/core/extensions/extensions.dart';
+import 'package:venus_hr_psti/core/extensions/date_time_ext.dart';
 import 'package:venus_hr_psti/page/request/request_viewmodel.dart';
 
-import 'custom_text_field.dart';
 import 'smart_image.dart';
 
-class CardListRequest extends StatefulWidget {
+class CardListApproveRequest extends StatefulWidget {
   RequestViewmodel? vm;
-  CardListRequest({
+  CardListApproveRequest({
     Key? key,
     this.vm,
   });
 
   @override
-  State<CardListRequest> createState() => _CardListRequestState();
+  State<CardListApproveRequest> createState() => _CardListApproveRequestState();
 }
 
-class _CardListRequestState extends State<CardListRequest> {
+class _CardListApproveRequestState extends State<CardListApproveRequest> {
+  void _showDialog(String? type) {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Tidak bisa ditutup dengan tap di luar dialog
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Row(
+            children: [
+              Icon(Icons.warning, color: Colors.orange),
+              SizedBox(width: 8),
+              Text("Confirmation"),
+            ],
+          ),
+          content: Text(
+            "Are you sure you want to proceed \"$type\"?",
+            style: TextStyle(fontSize: 16),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Menutup dialog
+              },
+              child: Text("Cancel"),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+              ),
+              onPressed: () {
+                // TODO: tambahkan aksi sesuai kebutuhan
+                Navigator.pop(context); // Tutup dialog setelah aksi
+              },
+              child: Text("Yes"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final formatCurrency = NumberFormat.simpleCurrency(
@@ -32,9 +74,9 @@ class _CardListRequestState extends State<CardListRequest> {
     );
     return RefreshIndicator(
         onRefresh: () async {
-          await widget.vm!.getListMyRequest();
+          await widget.vm!.getListApproveRequest();
         },
-        child: widget.vm?.listMyRequest == []
+        child: widget.vm?.listApproveRequest == []
             ? Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -63,12 +105,13 @@ class _CardListRequestState extends State<CardListRequest> {
                           child: TextField(
                             onChanged: (value) {
                               setState(() {
-                                widget.vm?.searchControllerMyRequest?.text =
-                                    value;
-                                widget.vm?.onSearchTextChangedMyRequest(value);
+                                widget.vm?.searchControllerApprovedRequest
+                                    ?.text = value;
+                                widget.vm?.onSearchTextChangedAppRequest(value);
                               });
                             },
-                            controller: widget.vm?.searchControllerMyRequest,
+                            controller:
+                                widget.vm?.searchControllerApprovedRequest,
                             decoration: InputDecoration(
                                 prefixIcon: Icon(Icons.search),
                                 hintText: 'Search ...',
@@ -80,10 +123,10 @@ class _CardListRequestState extends State<CardListRequest> {
                                   onPressed: () {
                                     setState(() {
                                       FocusScope.of(context).unfocus();
-                                      widget.vm?.searchControllerMyRequest
+                                      widget.vm?.searchControllerApprovedRequest
                                           ?.clear();
                                       widget.vm
-                                          ?.onSearchTextChangedMyRequest('');
+                                          ?.onSearchTextChangedAppRequest('');
                                     });
                                   },
                                 )),
@@ -91,14 +134,13 @@ class _CardListRequestState extends State<CardListRequest> {
                         ),
                       ),
                       Column(
-                          children: widget.vm?.listMyRequest.map((e) {
+                          children: widget.vm?.listApproveRequest.map((e) {
                                 String? pisahkoma =
                                     e['Notes'].split('.').toString();
                                 String? pisahkoma2 =
                                     e['Notes'].split(',').toString();
                                 List<dynamic> listImage =
                                     e['FileNames'].toString().split('|');
-
                                 return Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Container(
@@ -137,24 +179,57 @@ class _CardListRequestState extends State<CardListRequest> {
                                                             FontWeight.bold,
                                                       ),
                                                     ),
-                                                    SizedBox(
-                                                      height: 25,
-                                                      child: ElevatedButton(
-                                                          style: ButtonStyle(
-                                                              backgroundColor:
-                                                                  WidgetStatePropertyAll(
-                                                            Colors.red,
-                                                          )),
-                                                          onPressed: () {},
-                                                          child: Text(
-                                                            "Cancel",
-                                                            style: GoogleFonts
-                                                                .lato(
-                                                              color:
-                                                                  Colors.white,
-                                                              fontSize: 11,
-                                                            ),
-                                                          )),
+                                                    Row(
+                                                      children: [
+                                                        SizedBox(
+                                                          height: 25,
+                                                          child: ElevatedButton(
+                                                              style:
+                                                                  ButtonStyle(
+                                                                      backgroundColor:
+                                                                          WidgetStatePropertyAll(
+                                                                Colors.red,
+                                                              )),
+                                                              onPressed: () {
+                                                                _showDialog(
+                                                                    'Cancel');
+                                                              },
+                                                              child: Text(
+                                                                "Cancel",
+                                                                style:
+                                                                    GoogleFonts
+                                                                        .lato(
+                                                                  color: Colors
+                                                                      .white,
+                                                                  fontSize: 11,
+                                                                ),
+                                                              )),
+                                                        ),
+                                                        SizedBox(
+                                                          width: 5,
+                                                        ),
+                                                        SizedBox(
+                                                          height: 25,
+                                                          child: ElevatedButton(
+                                                              style:
+                                                                  ButtonStyle(
+                                                                      backgroundColor:
+                                                                          WidgetStatePropertyAll(
+                                                                Colors.green,
+                                                              )),
+                                                              onPressed: () {},
+                                                              child: Text(
+                                                                "Approve",
+                                                                style:
+                                                                    GoogleFonts
+                                                                        .lato(
+                                                                  color: Colors
+                                                                      .white,
+                                                                  fontSize: 11,
+                                                                ),
+                                                              )),
+                                                        ),
+                                                      ],
                                                     ),
                                                   ],
                                                 ),
@@ -197,7 +272,7 @@ class _CardListRequestState extends State<CardListRequest> {
                                                               "${e['TranType']}",
                                                               style: GoogleFonts
                                                                   .lato(
-                                                                fontSize: 13,
+                                                                fontSize: 15,
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .bold,
@@ -228,7 +303,7 @@ class _CardListRequestState extends State<CardListRequest> {
                                                                         "${DateFormat('MM/dd/yyyy').parse('${e['Notes'].toString().split('-')[0].trim()}').toFormattedDateDays()} - ${DateFormat('MM/dd/yyyy').parse('${e['Notes'].toString().split('-')[1].trim()}').toFormattedDateDays()}",
                                                                         style: GoogleFonts.lato(
                                                                             fontSize:
-                                                                                11,
+                                                                                12,
                                                                             color: const Color.fromARGB(
                                                                                 125,
                                                                                 0,
@@ -295,39 +370,6 @@ class _CardListRequestState extends State<CardListRequest> {
                                                                 ),
                                                                 Text(
                                                                   "(Requester)",
-                                                                  style: GoogleFonts
-                                                                      .poppins(
-                                                                    fontSize:
-                                                                        10,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold,
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                          SizedBox(
-                                                            height: 50,
-                                                            child:
-                                                                DottedVerticalLine(),
-                                                          ),
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(8.0),
-                                                            child: Column(
-                                                              children: [
-                                                                Text(
-                                                                  "${e['ApprovedBy'] == '' || e['ApprovedBy'] == null ? '-' : e['ApprovedBy']}",
-                                                                  style: GoogleFonts
-                                                                      .poppins(
-                                                                    fontSize:
-                                                                        11,
-                                                                  ),
-                                                                ),
-                                                                Text(
-                                                                  "(Approved By)",
                                                                   style: GoogleFonts
                                                                       .poppins(
                                                                     fontSize:
