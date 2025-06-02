@@ -13,6 +13,7 @@ class CustomTextField extends StatelessWidget {
   final Widget? suffixIcon;
   final bool readOnly;
   final int maxLines;
+  final FormFieldValidator<String>? validator; //
 
   const CustomTextField({
     super.key,
@@ -26,6 +27,7 @@ class CustomTextField extends StatelessWidget {
     this.suffixIcon,
     this.readOnly = false,
     this.maxLines = 1,
+    this.validator, // Tam
   });
 
   @override
@@ -50,10 +52,10 @@ class CustomTextField extends StatelessWidget {
           keyboardType: keyboardType,
           readOnly: readOnly,
           maxLines: maxLines,
+          validator: validator, //
           decoration: InputDecoration(
             prefixIcon: prefixIcon,
             suffixIcon: suffixIcon,
-            
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16.0),
               borderSide: const BorderSide(color: Colors.grey),

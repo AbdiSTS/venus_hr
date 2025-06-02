@@ -29,6 +29,7 @@ class _HomeViewState extends State<HomeView> {
         viewModelBuilder: () => HomeViewmodel(ctx: context),
         builder: (context, vm, child) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
+             context.read<GlobalLoadingState>().getLengthApproveRequest();
             vm.isBusy
                 ? context.read<GlobalLoadingState>().show()
                 : context.read<GlobalLoadingState>().hide();

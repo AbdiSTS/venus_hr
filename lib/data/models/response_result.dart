@@ -6,6 +6,7 @@ class ResponseResult {
   String? message;
   String? token;
   String? refreshTokens;
+  List<dynamic>? dataDetail;
   List<UserModel>? userData;
   List<dynamic>? listData;
 
@@ -16,12 +17,14 @@ class ResponseResult {
     this.message = '',
     this.userData = const [],
     this.listData = const [],
+    this.dataDetail = const [],
   });
 
   ResponseResult.fromJson(Map<String, dynamic> json) {
     success = json['success'];
     message = json['message'];
     token = json['token'];
+    dataDetail = json['dataDetail'];
     refreshTokens = json['refreshTokens'];
     listData = json['listData'];
 
@@ -44,6 +47,7 @@ class ResponseResult {
     data['token'] = token;
     data['refreshTokens'] = refreshTokens;
     data['listData'] = listData;
+    data['dataDetail'] = dataDetail;
     data['data'] = userData?.map((e) => e.toMap()).toList();
     return data;
   }

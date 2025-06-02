@@ -306,6 +306,7 @@ class HomeViewmodel extends FutureViewModel {
 
   getAllFunction() async {
     setBusy(true);
+    
     await getDataUser();
     await locationCheck();
     await getLeaveSaldo();

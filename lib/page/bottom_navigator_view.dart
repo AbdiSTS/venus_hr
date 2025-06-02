@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
+import 'package:venus_hr_psti/data/datasources/api_services.dart';
+import 'package:venus_hr_psti/data/datasources/local_services.dart';
+import 'package:venus_hr_psti/page/request/request_viewmodel.dart';
 import 'package:venus_hr_psti/state_global/loading_overlay.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:venus_hr_psti/data/datasources/api_base.dart';
+import 'package:venus_hr_psti/data/models/list_dynamic_model.dart';
+import 'package:encrypt/encrypt.dart' as encrypt;
 
 import '../core/assets/assets.gen.dart';
 import '../core/components/styles.dart';
@@ -21,15 +29,20 @@ class BottomNavigatorView extends StatefulWidget {
 
 class _BottomNavigatorViewState extends State<BottomNavigatorView> {
   int _selectedIndex = 0;
+
   final _widgets = [
     const HomeView(),
     const RequestView(),
     const HistoryView(),
     const ProfileView(),
   ];
+
+
+
   @override
   Widget build(BuildContext context) {
     final isLoading = context.watch<GlobalLoadingState>().isLoading;
+    final lengthApproveRequest = context.watch<GlobalLoadingState>().getlengthApproveRequestVariabel;
     return Stack(
       children: [
         Scaffold(
@@ -62,11 +75,42 @@ class _BottomNavigatorViewState extends State<BottomNavigatorView> {
                   label: 'Home',
                 ),
                 BottomNavigationBarItem(
-                  icon: Assets.icons.nav.setting.svg(
-                    colorFilter: ColorFilter.mode(
-                      _selectedIndex == 1 ? AppColors.primary : AppColors.grey,
-                      BlendMode.srcIn,
-                    ),
+                  icon: Stack(
+                    children: [
+                      // Icon utama
+                      Assets.icons.nav.setting.svg(
+                        colorFilter: ColorFilter.mode(
+                          _selectedIndex == 1
+                              ? AppColors.primary
+                              : AppColors.grey,
+                          BlendMode.srcIn,
+                        ),
+                      ),
+                      // Badge notifikasi
+                      Positioned(
+                        right: 0,
+                        top: 0,
+                        child: Container(
+                          padding: EdgeInsets.all(1),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          constraints: BoxConstraints(
+                            minWidth: 12,
+                            minHeight: 12,
+                          ),
+                          child: Text(
+                            '${lengthApproveRequest}', // Ganti dengan jumlah notifikasi yang diinginkan
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 9,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   label: 'Request',
                 ),

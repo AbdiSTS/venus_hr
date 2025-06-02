@@ -122,7 +122,7 @@ class PermisionViewmodel extends FutureViewModel {
     try {
       XFile? pickedFile =
           await ImagePicker().pickImage(source: ImageSource.gallery);
-      // print("image picked : ${pickedFile!.path}");
+      // print("image picked : ${pickedFile!.path}"); 
       if (pickedFile != null) {
         File file = File(pickedFile.path);
         imageFiles.add(file);

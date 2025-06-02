@@ -55,6 +55,12 @@ class SplashViewmodel extends FutureViewModel {
                   .push(MaterialPageRoute(builder: (context) => LoginView()));
             },
           );
+          ScaffoldMessenger.of(ctx!).showSnackBar(
+            SnackBar(
+              content: Text("Your session has expired, please login again"),
+              backgroundColor: AppColors.red,
+            ),
+          );
 
           notifyListeners();
         }

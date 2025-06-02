@@ -2,7 +2,7 @@ class ApiBase {
   static const String appName = 'com.example.nusantara_ess';
   static const String version = 'v1.8';
   static const String baseUrl =
-      'https://api.sinergiteknologi.co.id/ApiVenusHR/api/mobile/';
+      'https://api.sinergiteknologi.co.id/ApiVenusHR/api/mobile';
   static const String hostServer = 'IMPLEMENTSERVER';
   static const String dbName = 'VenusHR13';
 
@@ -40,6 +40,10 @@ class ApiBase {
 
   String postPermission() {
     return "$baseUrl/postDataPermission";
+  }
+  
+  String postOvertime() {
+    return "$baseUrl/postOvertime";
   }
 
   String postDataLeave() {
@@ -80,5 +84,21 @@ class ApiBase {
 
   String getListApproveRequest() {
     return "$baseUrl/getListApproveRequest";
+  }
+  
+  String getListHRReqHistory() {
+    return "$baseUrl/getListHRReqHistory";
+  }
+
+  String updateRequest(String? typeUpdate) {
+    return "$baseUrl/${typeUpdate}";
+  }
+
+  String deleteRequest() {
+    return "$baseUrl/deleteRequest";
+  }
+  
+  String getOvertimeType() {
+    return "$baseUrl/getOvertimeType";
   }
 }

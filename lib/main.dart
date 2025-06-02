@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:venus_hr_psti/data/datasources/api_services.dart';
 import 'package:venus_hr_psti/page/home/home_viewmodel.dart';
 import 'package:venus_hr_psti/page/login/login_view.dart';
+import 'package:venus_hr_psti/page/request/request_viewmodel.dart';
 import 'package:venus_hr_psti/page/splash_screen/splash_screen.dart';
 
 import 'core/theme/app_theme.dart';
@@ -12,8 +14,10 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
+
         ChangeNotifierProvider(create: (_) => GlobalLoadingState()),
-        ChangeNotifierProvider(create: (_) => HomeViewmodel()),
+
+        ChangeNotifierProvider(create: (_) => RequestViewmodel()),
       ],
       child: MyApp(),
     ),

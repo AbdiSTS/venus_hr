@@ -25,7 +25,7 @@ class _SmartImageState extends State<SmartImage> {
   void _setUrl() {
     final baseUrl =
         'https://api.sinergiteknologi.co.id/ApiVenusHR/public/images/permission/';
-
+   
     if (_hasExtension) {
       currentUrl = '$baseUrl${widget.filename}';
     } else {

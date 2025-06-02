@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http_parser/http_parser.dart';
@@ -724,6 +725,7 @@ class ApiServices extends ChangeNotifier {
         body: jsonEncode({'data': encryptData(jsonEncode(dataJson))}));
 
     if (response.statusCode == 201) {
+      notifyListeners();
       return ListDynamicModel(
         success: true,
         listData: jsonDecode(response.body),
@@ -733,6 +735,326 @@ class ApiServices extends ChangeNotifier {
         success: false,
         listData: [],
       );
+    }
+  }
+
+  Future<ListDynamicModel> updateRequest(
+      String employeeId, String tranNo, String tranName, String status) async {
+    try {
+      final getUser = await LocalServices().getAuthData();
+      DateTime dateTime = DateTime.now();
+
+      String? endPoint;
+      String? tranNumber;
+
+      if (tranName == "Permission") {
+        endPoint = "updatePermission";
+        tranNumber = "AbsNumber";
+      } else if (tranName == "Leave") {
+        endPoint = "updateLeave";
+        tranNumber = "LVNumber";
+      } else if (tranName == "Loan") {
+        endPoint = "updateLoan";
+        tranNumber = "LOANNumber";
+      } else if (tranName == "Overtime") {
+        endPoint = "updateOvertime";
+        tranNumber = "OTNumber";
+      }
+
+      final Map<String, dynamic> data = {
+        'host': ApiBase.hostServer,
+        'dbName': ApiBase.dbName,
+        "${tranNumber}": "${tranNo}",
+        "EmployeeID": "${employeeId}",
+        "ApprovedBy": "${getUser?.userData?[0].employeeID}",
+        if (status == "Rejected") "AppStatus": "Rejected",
+        "AppDate": "${DateFormat('yyyy-MM-dd 00:00:00').format(dateTime)}",
+        "UserModified": "${getUser?.userData?[0].userId}",
+        "DateModified": "${DateFormat('yyyy-MM-dd 00:00:00').format(dateTime)}",
+        "TimeModified": "${DateFormat('kkmmss').format(dateTime)}",
+      };
+
+      final url = Uri.parse(ApiBase().updateRequest(endPoint));
+      final response = await http.patch(url,
+          headers: getHeaders(),
+          body: jsonEncode({'data': encryptData(jsonEncode(data))}));
+
+      print("url : ${url}");
+      print("response : ${response.statusCode}");
+      print("response : ${response.body}");
+      print("data : ${data}");
+      if (response.statusCode == 201) {
+        return ListDynamicModel(
+          success: true,
+          message: jsonDecode(response.body)['message'],
+        );
+      } else {
+        return ListDynamicModel(
+          success: false,
+          message: jsonDecode(response.body)['message'],
+        );
+      }
+    } catch (e) {
+      print("error : ${e}");
+      return ListDynamicModel(
+        success: false,
+        message: '${e}',
+      );
+    }
+  }
+
+  Future<ListDynamicModel> deleteRequest(
+      String employeeId, String tranNo, String tranName) async {
+    try {
+      final getUser = await LocalServices().getAuthData();
+      DateTime dateTime = DateTime.now();
+
+      String? nameTable;
+      String? tranNumber;
+
+      if (tranName == "Permission") {
+        nameTable = "HR_T_Absence";
+        tranNumber = "AbsNumber";
+      } else if (tranName == "Leave") {
+        nameTable = "HR_T_Leave";
+        tranNumber = "LVNumber";
+      } else if (tranName == "Loan") {
+        nameTable = "HR_T_Loan";
+        tranNumber = "LOANNumber";
+      } else if (tranName == "Overtime") {
+        nameTable = "HR_T_Overtime";
+        tranNumber = "OTNumber";
+      }
+
+      final Map<String, dynamic> data = {
+        'host': ApiBase.hostServer,
+        'dbName': ApiBase.dbName,
+        "typeNumber": "${tranNumber}",
+        "numberRequest": "${tranNo}",
+        "nameTable": "${nameTable}",
+      };
+
+      final url = Uri.parse(ApiBase().deleteRequest());
+      final response = await http.post(url,
+          headers: getHeaders(),
+          body: jsonEncode({'data': encryptData(jsonEncode(data))}));
+
+      if (response.statusCode == 201) {
+        return ListDynamicModel(
+          success: true,
+          message: jsonDecode(response.body)['message'],
+        );
+      } else {
+        return ListDynamicModel(
+          success: false,
+          message: jsonDecode(response.body)['message'],
+        );
+      }
+    } catch (e) {
+      print("error : ${e}");
+      return ListDynamicModel(
+        success: false,
+        message: '${e}',
+      );
+    }
+  }
+
+// ================================== HISTORY =================================================================== //
+
+  Future<ListDynamicModel> getListHistoryRequest(
+      String dateFrom, String dateTo, String type) async {
+    try {
+      final getUser = await LocalServices().getAuthData();
+      final Map<String, dynamic> dataJson = {
+        'host': ApiBase.hostServer,
+        'dbName': ApiBase.dbName,
+        'employee': '${getUser?.userData?[0].employeeID}',
+        'date1': '${dateFrom}',
+        'date2': '${dateTo}',
+        'status': '${type}',
+      };
+
+      final url = Uri.parse(ApiBase().getListHRReqHistory());
+      final response = await http.post(url,
+          headers: getHeaders(),
+          body: jsonEncode({'data': encryptData(jsonEncode(dataJson))}));
+
+      if (response.statusCode == 200) {
+        return ListDynamicModel(
+          success: true,
+          listData: jsonDecode(response.body),
+        );
+      } else {
+        return ListDynamicModel(
+          success: false,
+          listData: [],
+        );
+      }
+    } catch (e) {
+      print("error : ${e}");
+      return ListDynamicModel(
+        success: false,
+        message: '${e}',
+      );
+    }
+  }
+
+// ================================== OVERTIME =================================================================== //
+
+  Future<ListDynamicModel> getOvertimeType() async {
+    try {
+      final Map<String, dynamic> dataJson = {
+        'host': ApiBase.hostServer,
+        'dbName': ApiBase.dbName,
+      };
+      final url = Uri.parse(ApiBase().getOvertimeType());
+      final response = await http.post(url,
+          headers: getHeaders(),
+          body: jsonEncode({'data': encryptData(jsonEncode(dataJson))}));
+
+      if (response.statusCode == 200) {
+        return ListDynamicModel(
+          success: true,
+          listData: jsonDecode(response.body),
+        );
+      } else {
+        return ListDynamicModel(
+          success: false,
+          listData: jsonDecode(response.body),
+        );
+      }
+    } catch (e) {
+      return ListDynamicModel(
+        success: false,
+        listData: [],
+      );
+    }
+  }
+
+  Future<ResponseResult> postOvertime(
+    TimeOfDay? selectedTime,
+    TimeOfDay? selectedTime2,
+    String? overtimeTypeCode,
+    String? overtimeTypeName,
+    String? overtimeDate,
+    String? timeFrom,
+    String? timeTo,
+    String? appRequest,
+    String? reason,
+  ) async {
+    try {
+      final getUser = await LocalServices().getAuthData();
+      final getMonthlyPeriodes = await getMonthlyPeriode();
+      String? otindeks;
+      DateTime dateTime = DateTime.now();
+
+      final minutes1 = selectedTime!.hour * 60 + selectedTime.minute;
+      final minutes2 = selectedTime2!.hour * 60 + selectedTime2.minute;
+
+      final diffreneceInMinutes = (minutes2 - minutes1).abs();
+      final hours = diffreneceInMinutes ~/ 60;
+      final minutes = diffreneceInMinutes % 60;
+
+      print("diffreneceInMinutes : ${diffreneceInMinutes}");
+      print("overtime date  : ${overtimeDate}");
+      String? otStartConvert =
+          "${DateFormat('yyyy-MM-dd').format(DateTime.parse(overtimeDate!))} ${timeFrom}";
+      String? otFinishConvert =
+          "${DateFormat('yyyy-MM-dd').format(DateTime.parse(overtimeDate))} ${timeTo}";
+
+      if (overtimeTypeName == 'LEMBUR_HARIKERJA') {
+        if (diffreneceInMinutes >= 60) {
+          double indexForFirstHour = 1.5;
+          int remainingMinutes = diffreneceInMinutes - 60;
+          int intervals = remainingMinutes ~/ 30;
+          double index = indexForFirstHour;
+          otindeks = "${indexForFirstHour}";
+          print("otindeks : ${otindeks}");
+          for (int i = 0; i < intervals; i++) {
+            index += 1.0;
+            otindeks = "${index}";
+            // printDataEvery30Minutes(index);
+          }
+        }
+      } else {
+        if (diffreneceInMinutes >= 60) {
+          double indexForFirstHour = 2.0;
+
+          int remainingMinutes = diffreneceInMinutes - 60;
+          int intervals = remainingMinutes ~/ 30;
+          double index = indexForFirstHour;
+          otindeks = "${indexForFirstHour}";
+          for (int i = 0; i < intervals; i++) {
+            index += 1.0;
+            otindeks = "${index}";
+            // printDataEvery30Minutes(index);
+          }
+        }
+      }
+
+      if (getMonthlyPeriodes.listData!.isNotEmpty) {
+        final Map<String, dynamic> dataJson = {
+          'host': ApiBase.hostServer,
+          'dbName': ApiBase.dbName,
+          "BusCode": "${getUser?.userData?[0].busCode}",
+          "OTNumber":
+              "${getUser?.userData?[0].employeeID}${getMonthlyPeriodes.listData![0]['Periode']}${DateFormat('dd').format(DateTime.parse(overtimeDate!))}",
+          "OTPeriode": "${getMonthlyPeriodes.listData![0]['Periode']}",
+          "OTDate": "${overtimeDate}",
+          "EmployeeID": "${getUser?.userData?[0].employeeID}",
+          "OTTypeCode": "${overtimeTypeCode}",
+          "OTStart":
+              "${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.parse(otStartConvert))}",
+          "OTFinish":
+              "${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.parse(otFinishConvert))}",
+          "OTBreak": "",
+          "OTTimeDuration": "${diffreneceInMinutes}",
+          "OTIndeks": "${otindeks}",
+          "OTMeals": "0",
+          "OTTransport": "0",
+          "OTOther": "0",
+          "Description": "${reason}",
+          "ActualOTIndeks": "0",
+          "ActualOTMeals": "0",
+          "ActualOTTransport": "0",
+          "DefaultOvertime": false,
+          "AppRequest": "${appRequest}",
+          "ApprovedBy": "",
+          "AppStatus": "",
+          "AppDescription": "",
+          "OTHourDuration": "${hours}.${minutes}",
+          "UserCreated": "${getUser?.userData?[0].userId}",
+          "DateCreated":
+              "${DateFormat('yyyy-MM-dd 00:00:00').format(dateTime)}",
+          "TimeCreated": "${DateFormat('kkmmss').format(dateTime)}",
+          "UserModified": "",
+          "DateModified": "",
+          "TimeModified": ""
+        };
+
+        print("dataJson overtime : ${dataJson}");
+        final url = Uri.parse(ApiBase().postOvertime());
+        final response = await http.post(url,
+            headers: getHeaders(),
+            body: jsonEncode({'data': encryptData(jsonEncode(dataJson))}));
+
+        if (response.statusCode == 201) {
+          return ResponseResult(
+            success: true,
+            message: jsonDecode(response.body)['message'],
+          );
+        } else {
+          return ResponseResult(
+            success: false,
+            message: jsonDecode(response.body)['message'],
+          );
+        }
+      } else {
+        return ResponseResult(success: false, message: 'Periode not yet set');
+      }
+    } catch (e) {
+      print("Error : ${e}");
+      return ResponseResult(success: false, message: 'Error : ${e}');
     }
   }
 }

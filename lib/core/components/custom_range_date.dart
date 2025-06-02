@@ -13,6 +13,7 @@ class CustomDatePickerRange extends StatefulWidget {
   final Widget? prefix;
   final String label;
   final bool showLabel;
+  final FormFieldValidator<String>? validator;
 
   const CustomDatePickerRange({
     super.key,
@@ -24,6 +25,7 @@ class CustomDatePickerRange extends StatefulWidget {
     this.initialDate,
     this.onDateSelected,
     this.prefix,
+    this.validator, //
   });
 
   @override
@@ -91,6 +93,7 @@ class _CustomDatePickerRangeState extends State<CustomDatePickerRange> {
           const SizedBox(height: 12.0),
         ],
         TextFormField(
+          validator: widget.validator,
           controller: controller,
           onTap: () => _selectDate(context),
           readOnly: true,

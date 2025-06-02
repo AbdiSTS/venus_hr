@@ -50,7 +50,7 @@ class _RequestViewState extends State<RequestView>
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder.reactive(
-        viewModelBuilder: () => RequestViewmodel(),
+        viewModelBuilder: () => RequestViewmodel(ctx: context),
         builder: (context, vm, child) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             vm.isBusy

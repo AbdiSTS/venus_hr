@@ -6,23 +6,24 @@ import 'package:intl/intl.dart';
 import 'package:venus_hr_psti/core/components/card_list_approve_request.dart';
 import 'package:venus_hr_psti/core/components/dotten_vertical.dart';
 import 'package:venus_hr_psti/core/extensions/extensions.dart';
+import 'package:venus_hr_psti/page/history/history_viewmodel.dart';
 import 'package:venus_hr_psti/page/request/request_viewmodel.dart';
 
 import 'custom_text_field.dart';
 import 'smart_image.dart';
 
-class CardListRequest extends StatefulWidget {
-  RequestViewmodel? vm;
-  CardListRequest({
+class CardListHistoryRequest extends StatefulWidget {
+  HistoryViewmodel? vm;
+  CardListHistoryRequest({
     Key? key,
     this.vm,
   });
 
   @override
-  State<CardListRequest> createState() => _CardListRequestState();
+  State<CardListHistoryRequest> createState() => _CardListHistoryRequestState();
 }
 
-class _CardListRequestState extends State<CardListRequest> {
+class _CardListHistoryRequestState extends State<CardListHistoryRequest> {
   @override
   Widget build(BuildContext context) {
     final formatCurrency = NumberFormat.simpleCurrency(
@@ -31,10 +32,8 @@ class _CardListRequestState extends State<CardListRequest> {
       decimalDigits: 0,
     );
     return RefreshIndicator(
-        onRefresh: () async {
-          await widget.vm!.getListMyRequest();
-        },
-        child: widget.vm?.listMyRequest == []
+        onRefresh: () async {},
+        child: widget.vm?.listHistoryRequest == []
             ? Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -63,12 +62,14 @@ class _CardListRequestState extends State<CardListRequest> {
                           child: TextField(
                             onChanged: (value) {
                               setState(() {
-                                widget.vm?.searchControllerMyRequest?.text =
+                                widget.vm?.searchControllerHistoryRequest.text =
                                     value;
-                                widget.vm?.onSearchTextChangedMyRequest(value);
+                                widget.vm
+                                    ?.onSearchTextChangedHistoryRequest(value);
                               });
                             },
-                            controller: widget.vm?.searchControllerMyRequest,
+                            controller:
+                                widget.vm?.searchControllerHistoryRequest,
                             decoration: InputDecoration(
                                 prefixIcon: Icon(Icons.search),
                                 hintText: 'Search ...',
@@ -80,10 +81,11 @@ class _CardListRequestState extends State<CardListRequest> {
                                   onPressed: () {
                                     setState(() {
                                       FocusScope.of(context).unfocus();
-                                      widget.vm?.searchControllerMyRequest
-                                          ?.clear();
+                                      widget.vm?.searchControllerHistoryRequest
+                                          .clear();
                                       widget.vm
-                                          ?.onSearchTextChangedMyRequest('');
+                                          ?.onSearchTextChangedHistoryRequest(
+                                              '');
                                     });
                                   },
                                 )),
@@ -91,34 +93,13 @@ class _CardListRequestState extends State<CardListRequest> {
                         ),
                       ),
                       Column(
-                          children: widget.vm?.listMyRequest.map((e) {
+                          children: widget.vm?.listHistoryRequest.map((e) {
                                 String? pisahkoma =
                                     e['Notes'].split('.').toString();
                                 String? pisahkoma2 =
                                     e['Notes'].split(',').toString();
                                 List<dynamic> listImage =
                                     e['FileNames'].toString().split('|');
-
-                                final notesParts = e['TranName'] == 'Overtime'
-                                    ? e['Notes'].toString().split('-')
-                                    : [];
-
-                                final startDate = e['TranName'] == 'Overtime'
-                                    ? DateFormat('MM/dd/yyyy HH:mm:ss')
-                                        .parse(notesParts[0].trim())
-                                    : DateTime.now();
-                                final endDate = e['TranName'] == 'Overtime'
-                                    ? DateFormat('MM/dd/yyyy HH:mm:ss')
-                                        .parse(notesParts[1].trim())
-                                    : DateTime.now();
-
-                                final duration = endDate.difference(startDate);
-
-                                final hours = duration.inHours;
-                                final minutes =
-                                    duration.inMinutes.remainder(60);
-                                final seconds =
-                                    duration.inSeconds.remainder(60);
 
                                 return Padding(
                                   padding: const EdgeInsets.all(8.0),
@@ -158,37 +139,7 @@ class _CardListRequestState extends State<CardListRequest> {
                                                             FontWeight.bold,
                                                       ),
                                                     ),
-                                                    SizedBox(
-                                                      height: 25,
-                                                      child: ElevatedButton(
-                                                          style: ButtonStyle(
-                                                              backgroundColor:
-                                                                  WidgetStatePropertyAll(
-                                                            Colors.red,
-                                                          )),
-                                                          onPressed: () {
-                                                            print(
-                                                                "employeeID : ${e['EmployeeID']}");
-                                                            print(
-                                                                "tranNo : ${e['TranNo']}");
-                                                            print(
-                                                                "tranName : ${e['TranName']}");
-
-                                                            widget.vm?.cancelRequest(
-                                                                e['EmployeeID'],
-                                                                e['TranNo'],
-                                                                e['TranName']);
-                                                          },
-                                                          child: Text(
-                                                            "Cancel",
-                                                            style: GoogleFonts
-                                                                .lato(
-                                                              color:
-                                                                  Colors.white,
-                                                              fontSize: 11,
-                                                            ),
-                                                          )),
-                                                    ),
+                                                   
                                                   ],
                                                 ),
                                                 Divider(
@@ -268,27 +219,17 @@ class _CardListRequestState extends State<CardListRequest> {
                                                                                 0,
                                                                                 0)),
                                                                       )
-                                                                    : e['TranName'] ==
-                                                                            "Overtime"
-                                                                        ? Column(
-                                                                            crossAxisAlignment:
-                                                                                CrossAxisAlignment.start,
-                                                                            children: [
-                                                                              Text(
-                                                                                "${DateFormat('MM/dd/yyyy').parse('${e['Notes'].toString().split('-')[0].trim()}').toFormattedDateDays()} - ${DateFormat('MM/dd/yyyy').parse('${e['Notes'].toString().split('-')[1].trim()}').toFormattedDateDays()}",
-                                                                                style: GoogleFonts.lato(fontSize: 11, color: const Color.fromARGB(125, 0, 0, 0)),
-                                                                              ),
-                                                                              Text(
-                                                                                "(${DateFormat('HH:mm:ss').format(DateFormat('MM/dd/yyyy HH:mm:ss').parse('${e['Notes'].toString().split('-')[0].trim()}'))} - ${DateFormat('HH:mm:ss').format(DateFormat('MM/dd/yyyy HH:mm:ss').parse('${e['Notes'].toString().split('-')[1].trim()}'))}) | Duration: ${hours > 0 ? '$hours Hour ' : ''}${minutes > 0 ? '$minutes minute' : ''}",
-                                                                                style: GoogleFonts.lato(fontSize: 11, color: const Color.fromARGB(125, 0, 0, 0)),
-                                                                              ),
-                                                                            ],
-                                                                          )
-                                                                        : Text(
-                                                                            "${e['Notes']}",
-                                                                            style:
-                                                                                GoogleFonts.lato(fontSize: 12, color: const Color.fromARGB(125, 0, 0, 0)),
-                                                                          )
+                                                                    : Text(
+                                                                        "${e['Notes']}",
+                                                                        style: GoogleFonts.lato(
+                                                                            fontSize:
+                                                                                12,
+                                                                            color: const Color.fromARGB(
+                                                                                125,
+                                                                                0,
+                                                                                0,
+                                                                                0)),
+                                                                      )
                                                           ],
                                                         ),
                                                       ],
@@ -362,7 +303,7 @@ class _CardListRequestState extends State<CardListRequest> {
                                                             child: Column(
                                                               children: [
                                                                 Text(
-                                                                  "${e['ApprovedBy'] == '' || e['ApprovedBy'] == null ? '-' : e['ApprovedBy']}",
+                                                                  "${e['ApprovedName'] == '' || e['ApprovedName'] == null ? '-' : e['ApprovedName']}",
                                                                   style: GoogleFonts
                                                                       .poppins(
                                                                     fontSize:
@@ -451,13 +392,7 @@ class _CardListRequestState extends State<CardListRequest> {
                                                                                           ),
                                                                                           child: SmartImage(filename: listImage[index])),
                                                                                     ),
-                                                                                    // InkWell(
-                                                                                    //     onTap: () {
-                                                                                    //       setState(() {
-                                                                                    //         imageFiles.removeAt(index);
-                                                                                    //       });
-                                                                                    //     },
-                                                                                    //     child: Icon(Icons.cancel)),
+                                                                             
                                                                                   ],
                                                                                 );
                                                                               },

@@ -7,6 +7,7 @@ import 'package:venus_hr_psti/data/models/response_result.dart';
 class LocalServices extends ChangeNotifier {
   Future<void> saveDataLogin(ResponseResult data) async {
     final pref = await SharedPreferences.getInstance();
+    print("data to json : ${data.toJson()}");
     await pref.setString('auth_data', data.toJson());
   }
 
@@ -19,5 +20,10 @@ class LocalServices extends ChangeNotifier {
     } else {
       return null;
     }
+  }
+
+  Future<void> removeAuthData() async {
+    final pref = await SharedPreferences.getInstance();
+    await pref.remove('auth_data');
   }
 }

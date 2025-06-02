@@ -22,7 +22,7 @@ class CardListApproveRequest extends StatefulWidget {
 }
 
 class _CardListApproveRequestState extends State<CardListApproveRequest> {
-  void _showDialog(String? type) {
+  void _showDialog(String? type, dynamic e) {
     showDialog(
       context: context,
       barrierDismissible: false, // Tidak bisa ditutup dengan tap di luar dialog
@@ -45,7 +45,9 @@ class _CardListApproveRequestState extends State<CardListApproveRequest> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pop(context); // Menutup dialog
+                setState(() {
+                  Navigator.pop(context); // Menutup dialog
+                });
               },
               child: Text("Cancel"),
             ),
@@ -54,8 +56,12 @@ class _CardListApproveRequestState extends State<CardListApproveRequest> {
                 backgroundColor: Colors.green,
               ),
               onPressed: () {
+                setState(() {
+                  Navigator.pop(context);
+                  widget.vm?.updateRequest(
+                      e['EmployeeID'], e['TranNo'], e['TranName'], 'Approved');
+                });
                 // TODO: tambahkan aksi sesuai kebutuhan
-                Navigator.pop(context); // Tutup dialog setelah aksi
               },
               child: Text("Yes"),
             ),
@@ -192,10 +198,11 @@ class _CardListApproveRequestState extends State<CardListApproveRequest> {
                                                               )),
                                                               onPressed: () {
                                                                 _showDialog(
-                                                                    'Cancel');
+                                                                    'Rejected',
+                                                                    e);
                                                               },
                                                               child: Text(
-                                                                "Cancel",
+                                                                "Reject",
                                                                 style:
                                                                     GoogleFonts
                                                                         .lato(
@@ -217,7 +224,13 @@ class _CardListApproveRequestState extends State<CardListApproveRequest> {
                                                                           WidgetStatePropertyAll(
                                                                 Colors.green,
                                                               )),
-                                                              onPressed: () {},
+                                                              onPressed: () {
+                                                                setState(() {
+                                                                  _showDialog(
+                                                                      'Approved',
+                                                                      e);
+                                                                });
+                                                              },
                                                               child: Text(
                                                                 "Approve",
                                                                 style:

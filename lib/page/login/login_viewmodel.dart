@@ -29,6 +29,7 @@ class LoginViewmodel extends FutureViewModel {
 
       if (responseData.success == true) {
         if (responseData.userData!.isNotEmpty) {
+          print("responseData.dataDetail : ${responseData.dataDetail}");
           await localServices.saveDataLogin(responseData);
 
           Navigator.of(ctx!).pushReplacement(MaterialPageRoute(
